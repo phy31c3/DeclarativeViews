@@ -48,7 +48,7 @@ public interface DRVBuilder
 		/**
 		 * Ensures that the model (the first param of TriConsumer) is not null.
 		 */
-		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, Position> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 		
 		Buildable apply();
 	}
@@ -65,23 +65,11 @@ public interface DRVBuilder
 		/**
 		 * Ensures that the model (the first param of BiConsumer) is not null.
 		 */
-		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, Position> func);
+		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 	}
 	
 	interface Buildable extends Builder
 	{
 		void build();
-	}
-	
-	class Position
-	{
-		public final int inGroup;
-		public final int inList;
-		
-		Position(final int inGroup, final int inList)
-		{
-			this.inGroup = inGroup;
-			this.inList = inList;
-		}
 	}
 }

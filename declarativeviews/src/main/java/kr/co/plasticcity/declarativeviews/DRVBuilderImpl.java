@@ -165,7 +165,7 @@ class DRVBuilderImpl implements DRVBuilder.Buildable
 		}
 		
 		@Override
-		public GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, Position> func)
+		public GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
 		{
 			group.setOnFirstBind(func);
 			return this;
@@ -179,7 +179,7 @@ class DRVBuilderImpl implements DRVBuilder.Buildable
 		}
 		
 		@Override
-		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, Position> func)
+		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
 		{
 			group.setOnBind(func);
 			return this;

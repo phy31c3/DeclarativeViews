@@ -30,8 +30,8 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	private final int layoutResId;
 	
 	private Consumer<V> onCreate;
-	private TriConsumer<V, M, DRVBuilder.Position> onFirstBind;
-	private TriConsumer<V, M, DRVBuilder.Position> onBind;
+	private TriConsumer<V, M, ItemPosition> onFirstBind;
+	private TriConsumer<V, M, ItemPosition> onBind;
 	private int position;
 	
 	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, final int layoutResId, @NonNull final Class<V> viewType)
@@ -57,12 +57,12 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		this.onCreate = onCreate;
 	}
 	
-	void setOnFirstBind(@NonNull final TriConsumer<V, M, DRVBuilder.Position> onFirstBind)
+	void setOnFirstBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind)
 	{
 		this.onFirstBind = onFirstBind;
 	}
 	
-	void setOnBind(@NonNull final TriConsumer<V, M, DRVBuilder.Position> onBind)
+	void setOnBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind)
 	{
 		this.onBind = onBind;
 	}
@@ -109,11 +109,11 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		final M m = model.get(local);
 		if (m != null && onFirstBind != null)
 		{
-			onFirstBind.accept(v, m, new DRVBuilder.Position(local, pos));
+			onFirstBind.accept(v, m, new ItemPosition(local, pos));
 		}
 		else if (m != null && onBind != null)
 		{
-			onBind.accept(v, m, new DRVBuilder.Position(local, pos));
+			onBind.accept(v, m, new ItemPosition(local, pos));
 		}
 	}
 	
@@ -123,7 +123,7 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		final M m = model.get(local);
 		if (m != null && onBind != null)
 		{
-			onBind.accept(v, m, new DRVBuilder.Position(local, pos));
+			onBind.accept(v, m, new ItemPosition(local, pos));
 		}
 	}
 	
