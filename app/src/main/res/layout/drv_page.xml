@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <kr.co.plasticcity.declarativeviews.sample.recyclerview.PageSample
+    <kr.co.plasticcity.declarativeviews.sample.DRVPage
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="kr.co.plasticcity.declarativerecyclerview.sample.DRVSampleActivity">
@@ -49,6 +49,6 @@
 
         </LinearLayout>
 
-    </kr.co.plasticcity.declarativeviews.sample.recyclerview.PageSample>
+    </kr.co.plasticcity.declarativeviews.sample.DRVPage>
 
 </layout>

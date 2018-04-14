@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.sample.recyclerview;
+package kr.co.plasticcity.declarativeviews.sample;
 
 import android.app.Activity;
 import android.databinding.DataBindingUtil;
@@ -15,30 +15,29 @@ import java.util.Set;
 import kr.co.plasticcity.declarativeviews.recyclerview.IdComparable;
 import kr.co.plasticcity.declarativeviews.recyclerview.ListModel;
 import kr.co.plasticcity.declarativeviews.recyclerview.SingleModel;
-import kr.co.plasticcity.declarativeviews.sample.R;
-import kr.co.plasticcity.declarativeviews.sample.databinding.DrvActivitySampleBinding;
-import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemSampleBinding;
+import kr.co.plasticcity.declarativeviews.sample.databinding.DrvActivityBinding;
+import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemBinding;
 
-public class DRVSampleActivity extends Activity
+public class DRVActivity extends Activity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		final DrvActivitySampleBinding binding = DataBindingUtil.setContentView(this, R.layout.drv_activity_sample);
+		final DrvActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.drv_activity);
 		binding.dvp.build(builder ->
 		{
 			builder.setItemCount(2)
-			       .setPageView(R.layout.drv_page_sample, PageSample.class)
-			       .onPageCreated((pageSample, position) ->
+			       .setPageView(R.layout.drv_page, DRVPage.class)
+			       .onPageCreated((DRVPage, position) ->
 			       {
 				       switch (position)
 				       {
 				       case 0:
-					       buildFirstPage(pageSample);
+					       buildFirstPage(DRVPage);
 					       break;
 				       case 1:
-					       buildSecondPage(pageSample);
+					       buildSecondPage(DRVPage);
 					       break;
 				       }
 			       })
@@ -46,7 +45,7 @@ public class DRVSampleActivity extends Activity
 		});
 	}
 	
-	private void buildFirstPage(@NonNull final PageSample page)
+	private void buildFirstPage(@NonNull final DRVPage page)
 	{
 		final SingleModel<String> emptyModel = SingleModel.empty();
 		final SingleModel<?> nullModel = SingleModel.of(new Object());
@@ -63,7 +62,7 @@ public class DRVSampleActivity extends Activity
 		
 		page.binding.drv.build(builder ->
 		{
-			builder.addGroup(listFront, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			builder.addGroup(listFront, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.chk.setVisibility(View.VISIBLE);
@@ -91,7 +90,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup("정적 모델", R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup("정적 모델", R.layout.drv_item, DrvItemBinding.class)
 			       .onFistBind((v, m) ->
 			       {
 				       v.txv.setText(m);
@@ -100,7 +99,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(emptyModel, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(emptyModel, R.layout.drv_item, DrvItemBinding.class)
 			       .onFistBind((v, m) ->
 			       {
 				       v.txv.setText(m);
@@ -109,7 +108,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(nullModel, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(nullModel, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.txv.setText("널 모델");
@@ -118,7 +117,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(singleModel, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(singleModel, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.btn.setText("숫자 바꾸기");
@@ -133,7 +132,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(addFront, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(addFront, R.layout.drv_item, DrvItemBinding.class)
 			       .onFistBind((v, m) ->
 			       {
 				       v.txv.setText(m);
@@ -142,7 +141,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(addRear, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(addRear, R.layout.drv_item, DrvItemBinding.class)
 			       .onFistBind((v, m) ->
 			       {
 				       v.txv.setText(m);
@@ -151,7 +150,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(getPosition, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(getPosition, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.btn.setOnClickListener(v1 -> getPosition.performChanged());
@@ -163,7 +162,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(SingleModel.of(""), R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(SingleModel.of(""), R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.txv.setText("워프하기");
@@ -177,7 +176,7 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(listRear, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(listRear, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.chk.setVisibility(View.VISIBLE);
@@ -249,7 +248,7 @@ public class DRVSampleActivity extends Activity
 		});
 	}
 	
-	private void buildSecondPage(@NonNull final PageSample page)
+	private void buildSecondPage(@NonNull final DRVPage page)
 	{
 		final SingleModel<String> m0 = SingleModel.of("그냥");
 		final ListModel<Object> m1 = ListModel.of(Arrays.asList("", "", ""));
@@ -259,21 +258,21 @@ public class DRVSampleActivity extends Activity
 		
 		page.binding.drv.build(builder ->
 		{
-			builder.addGroup(m0, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			builder.addGroup(m0, R.layout.drv_item, DrvItemBinding.class)
 			       .onBind((v, m) ->
 			       {
 				       v.txv.setText(m);
 			       })
 			       .apply()
 			
-			       .addGroup(m1, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(m1, R.layout.drv_item, DrvItemBinding.class)
 			       .onBind((v, m) ->
 			       {
 				       v.txv.setText("자리만 차지하는 애들");
 			       })
 			       .apply()
 			
-			       .addGroup(listModel, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
 			       {
 				       v.chk.setVisibility(View.VISIBLE);
@@ -284,14 +283,14 @@ public class DRVSampleActivity extends Activity
 			       })
 			       .apply()
 			
-			       .addGroup(m2, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(m2, R.layout.drv_item, DrvItemBinding.class)
 			       .onBind((v, m) ->
 			       {
 				       v.txv.setText("자리만 차지하는 애들");
 			       })
 			       .apply()
 			
-			       .addGroup(m3, R.layout.drv_item_sample, DrvItemSampleBinding.class)
+			       .addGroup(m3, R.layout.drv_item, DrvItemBinding.class)
 			       .onBind((v, m) ->
 			       {
 				       v.txv.setText(m);
