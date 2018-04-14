@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         tools:context="kr.co.plasticcity.declarativerecyclerview.sample.DRVSampleActivity">
 
-        <kr.co.plasticcity.declarativeviews.recyclerview.DeclarativeRecyclerView
+        <kr.co.plasticcity.declarativeviews.DeclarativeRecyclerView
             android:id="@+id/drv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

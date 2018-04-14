@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,14 +17,14 @@ import kr.co.plasticcity.declarativeviews.function.TriConsumer;
  * Created by JongsunYu on 2017-01-03.
  */
 
-class BuilderImpl implements Builder.Buildable
+class DRVBuilderImpl implements DRVBuilder.Buildable
 {
 	@NonNull
 	private final Consumer<DRVAdapter> applier;
 	@NonNull
 	private final DRVAdapter adapter;
 	
-	BuilderImpl(@NonNull final Consumer<DRVAdapter> applier)
+	DRVBuilderImpl(@NonNull final Consumer<DRVAdapter> applier)
 	{
 		this.applier = applier;
 		this.adapter = new DRVAdapter();
@@ -189,7 +189,7 @@ class BuilderImpl implements Builder.Buildable
 		public Buildable apply()
 		{
 			adapter.addGroup(group);
-			return BuilderImpl.this;
+			return DRVBuilderImpl.this;
 		}
 	}
 }

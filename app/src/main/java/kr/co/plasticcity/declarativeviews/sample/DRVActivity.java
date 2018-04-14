@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import kr.co.plasticcity.declarativeviews.recyclerview.IdComparable;
-import kr.co.plasticcity.declarativeviews.recyclerview.ListModel;
-import kr.co.plasticcity.declarativeviews.recyclerview.SingleModel;
+import kr.co.plasticcity.declarativeviews.IdComparable;
+import kr.co.plasticcity.declarativeviews.ListModel;
+import kr.co.plasticcity.declarativeviews.SingleModel;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DrvActivityBinding;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemBinding;
 

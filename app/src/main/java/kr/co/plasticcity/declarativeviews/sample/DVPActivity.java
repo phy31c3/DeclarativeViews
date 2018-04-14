@@ -10,10 +10,10 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
-import kr.co.plasticcity.declarativeviews.recyclerview.DeclarativeRecyclerView;
-import kr.co.plasticcity.declarativeviews.recyclerview.ListModel;
+import kr.co.plasticcity.declarativeviews.DeclarativeRecyclerView;
+import kr.co.plasticcity.declarativeviews.ListModel;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DvpPageBinding;
-import kr.co.plasticcity.declarativeviews.viewpager.DeclarativeViewPager;
+import kr.co.plasticcity.declarativeviews.DeclarativeViewPager;
 
 public class DVPActivity extends Activity
 {

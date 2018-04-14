@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.viewpager;
+package kr.co.plasticcity.declarativeviews;
 
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
@@ -13,7 +13,7 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
  * Created by JongsunYu on 2017-01-05.
  */
 
-class BuilderImpl implements Builder, Builder.SetCircular
+class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 {
 	@NonNull
 	private final Consumer<DVPAdapter> registrator;
@@ -21,7 +21,7 @@ class BuilderImpl implements Builder, Builder.SetCircular
 	private int offscreenPageLimit;
 	private boolean circular;
 	
-	BuilderImpl(@NonNull final Consumer<DVPAdapter> registrator)
+	DVPBuilderImpl(@NonNull final Consumer<DVPAdapter> registrator)
 	{
 		this.registrator = registrator;
 	}

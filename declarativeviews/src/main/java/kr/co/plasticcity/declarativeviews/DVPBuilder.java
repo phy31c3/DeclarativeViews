@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.viewpager;
+package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -11,8 +11,10 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
  * Created by JongsunYu on 2017-01-05.
  */
 
-public interface Builder
+public interface DVPBuilder
 {
+	interface Builder extends DVPBuilder {}
+	
 	SetCircular setItemCount(final int itemCount);
 	
 	SetPageView setInfiniteMode(final int offscreenPageLimit);

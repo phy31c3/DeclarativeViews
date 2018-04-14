@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -14,8 +14,10 @@ import kr.co.plasticcity.declarativeviews.function.TriConsumer;
  * Created by JongsunYu on 2017-01-03.
  */
 
-public interface Builder
+public interface DRVBuilder
 {
+	interface Builder extends DRVBuilder {}
+	
 	<M> SingleGroupAdder<M, View> addGroup(@NonNull final M model, final int layoutResId);
 	
 	<M, V> SingleGroupAdder<M, V> addGroup(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
