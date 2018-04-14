@@ -15,16 +15,16 @@ import java.util.Set;
 import kr.co.plasticcity.declarativeviews.IdComparable;
 import kr.co.plasticcity.declarativeviews.ListModel;
 import kr.co.plasticcity.declarativeviews.SingleModel;
-import kr.co.plasticcity.declarativeviews.sample.databinding.DrvActivityBinding;
+import kr.co.plasticcity.declarativeviews.sample.databinding.DllActivityBinding;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemBinding;
 
-public class DRVActivity extends AppCompatActivity
+public class DLLActivity extends AppCompatActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		final DrvActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.drv_activity);
+		final DllActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.dll_activity);
 		binding.dvp.build(builder ->
 		{
 			builder.setItemCount(2)

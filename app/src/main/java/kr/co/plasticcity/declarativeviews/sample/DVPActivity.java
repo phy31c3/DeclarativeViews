@@ -1,8 +1,8 @@
 package kr.co.plasticcity.declarativeviews.sample;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.util.Log;
 import android.view.View;
@@ -11,11 +11,11 @@ import android.widget.TextView;
 import java.util.Arrays;
 
 import kr.co.plasticcity.declarativeviews.DeclarativeRecyclerView;
+import kr.co.plasticcity.declarativeviews.DeclarativeViewPager;
 import kr.co.plasticcity.declarativeviews.ListModel;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DvpPageBinding;
-import kr.co.plasticcity.declarativeviews.DeclarativeViewPager;
 
-public class DVPActivity extends Activity
+public class DVPActivity extends AppCompatActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

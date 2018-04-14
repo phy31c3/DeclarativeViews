@@ -16,8 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".DRVActivity"/>
-        <activity android:name=".DVPActivity"/>
+        <activity
+            android:name=".DRVActivity"
+            android:label="RecyclerView"/>
+        <activity
+            android:name=".DLLActivity"
+            android:label="LinearLayout"/>
+        <activity
+            android:name=".DVPActivity"
+            android:label="ViewPager"/>
     </application>
 
 </manifest>

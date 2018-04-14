@@ -16,7 +16,7 @@ public class ActivityMain extends AppCompatActivity
 		final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 		
 		binding.button.setOnClickListener(v -> startActivity(new Intent(this, DRVActivity.class)));
-		binding.button2.setOnClickListener(v -> startActivity(new Intent(this, DVPActivity.class)));
+		binding.button2.setOnClickListener(v -> startActivity(new Intent(this, DLLActivity.class)));
 		binding.button3.setOnClickListener(v -> startActivity(new Intent(this, DVPActivity.class)));
 	}
 }
