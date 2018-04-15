@@ -55,7 +55,10 @@ class DRVAdapter extends RecyclerView.Adapter<DRVAdapter.ViewHolder> implements 
 		if (holder.fresh)
 		{
 			holder.fresh = false;
-			getGroupAt(position).onFirstBind(holder.v, position);
+			if (!getGroupAt(position).onFirstBind(holder.v, position))
+			{
+				getGroupAt(position).onBind(holder.v, position);
+			}
 		}
 		else
 		{

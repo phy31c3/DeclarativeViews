@@ -103,17 +103,21 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		return v;
 	}
 	
-	void onFirstBind(@NonNull final V v, final int pos)
+	/**
+	 * @return if the onFirstBind exists, return true. Else return false.
+	 */
+	boolean onFirstBind(@NonNull final V v, final int pos)
 	{
 		final int local = pos - this.position;
 		final M m = model.get(local);
 		if (m != null && onFirstBind != null)
 		{
 			onFirstBind.accept(v, m, new ItemPosition(local, pos));
+			return true;
 		}
-		else if (m != null && onBind != null)
+		else
 		{
-			onBind.accept(v, m, new ItemPosition(local, pos));
+			return false;
 		}
 	}
 	

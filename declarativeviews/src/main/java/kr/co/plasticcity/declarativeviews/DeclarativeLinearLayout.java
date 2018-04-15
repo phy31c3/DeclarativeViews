@@ -126,7 +126,7 @@ public class DeclarativeLinearLayout extends LinearLayout implements DLLView
 		beginTransition();
 		for (int i = 0 ; i < count ; ++i)
 		{
-			removeViewAt(start + i);
+			removeViewAt(start);
 		}
 	}
 	

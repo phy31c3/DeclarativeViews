@@ -2,7 +2,6 @@ package kr.co.plasticcity.declarativeviews;
 
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
-import android.util.SparseArray;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -15,14 +14,14 @@ import java.util.TreeMap;
 
 public class DLLAdapter implements DRVNotifier
 {
+	private static final int KEY_V = 0xFA9710D3;
+	
 	@NonNull
 	private final DLLView view;
 	@NonNull
 	private final List<DRVGroup> groups;
 	@NonNull
 	private TreeMap<Integer, DRVGroup> groupMap;
-	@NonNull
-	private SparseArray<DRVGroup> hashCodes;
 	private int itemCount;
 	
 	DLLAdapter(@NonNull final DLLView view)
@@ -30,7 +29,6 @@ public class DLLAdapter implements DRVNotifier
 		this.view = view;
 		this.groups = new ArrayList<>();
 		this.groupMap = new TreeMap<>();
-		this.hashCodes = new SparseArray<>();
 		this.itemCount = 0;
 	}
 	
@@ -39,7 +37,7 @@ public class DLLAdapter implements DRVNotifier
 	public void notifyChanged(final int position)
 	{
 		view.beginChange();
-		getGroupAt(position).onBind(view.getChild(position), position);
+		getGroupAt(position).onBind(view.getChild(position).getTag(KEY_V), position);
 	}
 	
 	@Override
@@ -63,7 +61,7 @@ public class DLLAdapter implements DRVNotifier
 		view.beginChange();
 		for (int i = 0 ; i < count ; ++i)
 		{
-			getGroupAt(start + i).onBind(view.getChild(start + i), start + i);
+			getGroupAt(start + i).onBind(view.getChild(start + i).getTag(KEY_V), start + i);
 		}
 	}
 	
@@ -112,7 +110,6 @@ public class DLLAdapter implements DRVNotifier
 	void addGroup(@NonNull final DRVGroup group)
 	{
 		groups.add(group);
-		hashCodes.put(group.hashCode(), group);
 		group.setPosition(itemCount);
 		if (group.size() > 0)
 		{
@@ -149,15 +146,18 @@ public class DLLAdapter implements DRVNotifier
 	{
 		final DRVGroup group = getGroupAt(position);
 		final Object v = group.createView(view.viewGroup());
-		group.onFirstBind(v, position); // onCreate
-		group.onBind(v, position); // onBind
+		final View itemView;
 		if (v instanceof ViewDataBinding)
 		{
-			return ((ViewDataBinding)v).getRoot();
+			itemView = ((ViewDataBinding)v).getRoot();
 		}
 		else
 		{
-			return (View)v;
+			itemView = (View)v;
 		}
+		itemView.setTag(KEY_V, v);
+		group.onFirstBind(v, position); // onCreate
+		group.onBind(v, position); // onBind
+		return itemView;
 	}
 }
