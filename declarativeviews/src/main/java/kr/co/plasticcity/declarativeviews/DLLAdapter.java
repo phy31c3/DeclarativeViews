@@ -12,7 +12,7 @@ import java.util.TreeMap;
  * Created by JongsunYu on 2018-04-15.
  */
 
-public class DLLAdapter implements DRVNotifier
+class DLLAdapter implements DRVNotifier
 {
 	private static final int KEY_V = 0xFA9710D3;
 	
