@@ -40,14 +40,8 @@ public interface DRVBuilder
 	{
 		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
 		
-		/**
-		 * Ensures that the model (the first param of BiConsumer) is not null.
-		 */
 		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
 		
-		/**
-		 * Ensures that the model (the first param of TriConsumer) is not null.
-		 */
 		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 		
 		Buildable apply();
@@ -57,14 +51,8 @@ public interface DRVBuilder
 	{
 		SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
 		
-		/**
-		 * Ensures that the model (the first param of BiConsumer) is not null.
-		 */
 		GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func);
 		
-		/**
-		 * Ensures that the model (the first param of BiConsumer) is not null.
-		 */
 		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 	}
 	
