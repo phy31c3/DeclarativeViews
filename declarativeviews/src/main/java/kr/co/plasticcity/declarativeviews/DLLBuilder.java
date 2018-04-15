@@ -7,6 +7,7 @@ import java.util.List;
 
 import kr.co.plasticcity.declarativeviews.function.BiConsumer;
 import kr.co.plasticcity.declarativeviews.function.Supplier;
+import kr.co.plasticcity.declarativeviews.function.TriConsumer;
 
 /**
  * Created by JongsunYu on 2017-01-03.
@@ -14,11 +15,19 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
 
 public interface DLLBuilder
 {
+	interface Builder extends DLLBuilder {}
+	
 	<M> GroupAdder<M, View> addGroup(@NonNull final M model, final int layoutResId);
 	
 	<M, V> GroupAdder<M, V> addGroup(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
 	
 	<M, V> GroupAdder<M, V> addGroup(@NonNull final M model, @NonNull final Supplier<V> supplier);
+	
+	<M> GroupAdder<M, View> addGroup(@NonNull final SingleModel<M> model, final int layoutResId);
+	
+	<M, V> GroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull Class<V> viewType);
+	
+	<M, V> GroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier);
 	
 	<M> GroupAdder<M, View> addGroup(@NonNull final List<M> model, final int layoutResId);
 	
@@ -30,14 +39,16 @@ public interface DLLBuilder
 	{
 		GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, M> func);
 		
+		GroupAdder<M, V> onCreate(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		
 		GroupAdder<M, V> onModelChanged(@NonNull final BiConsumer<V, M> func);
 		
-		GroupAdder<M, V> onRemove(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onModelChanged(@NonNull final TriConsumer<V, M, ItemPosition> func);
 		
 		Buildable apply();
 	}
 	
-	interface Buildable extends DLLBuilder
+	interface Buildable extends DLLBuilder.Builder
 	{
 		void build();
 	}
