@@ -6,6 +6,7 @@ import android.view.View;
 import java.util.List;
 
 import kr.co.plasticcity.declarativeviews.function.BiConsumer;
+import kr.co.plasticcity.declarativeviews.function.Consumer;
 import kr.co.plasticcity.declarativeviews.function.Supplier;
 import kr.co.plasticcity.declarativeviews.function.TriConsumer;
 
@@ -37,13 +38,13 @@ public interface DLLBuilder
 	
 	interface GroupAdder<M, V>
 	{
-		GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
 		
-		GroupAdder<M, V> onCreate(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> func);
 		
-		GroupAdder<M, V> onModelChanged(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
 		
-		GroupAdder<M, V> onModelChanged(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 		
 		Buildable apply();
 	}

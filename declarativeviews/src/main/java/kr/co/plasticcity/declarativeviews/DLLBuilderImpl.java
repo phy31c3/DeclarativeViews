@@ -151,28 +151,28 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		}
 		
 		@Override
-		public GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, M> func)
+		public GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func)
 		{
-			group.setOnFirstBind((m, v, position) -> func.accept(m, v));
+			group.setOnFirstBind((v, m, position) -> func.accept(v));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onCreate(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> func)
 		{
-			group.setOnFirstBind(func);
+			group.setOnFirstBind((v, m, position) -> func.accept(v, position));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onModelChanged(@NonNull final BiConsumer<V, M> func)
+		public GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func)
 		{
 			group.setOnBind((m, v, position) -> func.accept(m, v));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onModelChanged(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
 		{
 			group.setOnBind(func);
 			return this;

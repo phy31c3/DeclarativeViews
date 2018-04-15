@@ -149,7 +149,8 @@ public class DLLAdapter implements DRVNotifier
 	{
 		final DRVGroup group = getGroupAt(position);
 		final Object v = group.createView(view.viewGroup());
-		group.onFirstBind(v, position);
+		group.onFirstBind(v, position); // onCreate
+		group.onBind(v, position); // onBind
 		if (v instanceof ViewDataBinding)
 		{
 			return ((ViewDataBinding)v).getRoot();
