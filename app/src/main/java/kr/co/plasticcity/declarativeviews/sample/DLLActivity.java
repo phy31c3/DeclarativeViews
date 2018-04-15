@@ -16,6 +16,7 @@ import kr.co.plasticcity.declarativeviews.IdComparable;
 import kr.co.plasticcity.declarativeviews.ListModel;
 import kr.co.plasticcity.declarativeviews.SingleModel;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DllActivityBinding;
+import kr.co.plasticcity.declarativeviews.sample.databinding.DllPageBinding;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemBinding;
 
 public class DLLActivity extends AppCompatActivity
@@ -28,7 +29,7 @@ public class DLLActivity extends AppCompatActivity
 		binding.dvp.build(builder ->
 		{
 			builder.setItemCount(2)
-			       .setPageView(R.layout.drv_page, DRVPage.class)
+			       .setPageView(R.layout.dll_page, DllPageBinding.class)
 			       .onPageCreated((DRVPage, position) ->
 			       {
 				       switch (position)
@@ -45,7 +46,7 @@ public class DLLActivity extends AppCompatActivity
 		});
 	}
 	
-	private void buildFirstPage(@NonNull final DRVPage page)
+	private void buildFirstPage(@NonNull final DllPageBinding page)
 	{
 		final SingleModel<String> emptyModel = SingleModel.empty();
 		final SingleModel<?> nullModel = SingleModel.of(new Object());
@@ -60,7 +61,7 @@ public class DLLActivity extends AppCompatActivity
 		final List<Model> selectedFront = new ArrayList<>();
 		final List<Model> selectedReal = new ArrayList<>();
 		
-		page.binding.drv.build(builder ->
+		page.dll.build(builder ->
 		{
 			builder.addGroup(listFront, R.layout.drv_item, DrvItemBinding.class)
 			       .onCreate(v ->
@@ -91,7 +92,7 @@ public class DLLActivity extends AppCompatActivity
 			       .apply()
 			
 			       .addGroup("정적 모델", R.layout.drv_item, DrvItemBinding.class)
-			       .onFistBind((v, m) ->
+			       .onBind((v, m) ->
 			       {
 				       v.txv.setText(m);
 				       v.btn.setText("빈 모델 추가");
@@ -100,7 +101,7 @@ public class DLLActivity extends AppCompatActivity
 			       .apply()
 			
 			       .addGroup(emptyModel, R.layout.drv_item, DrvItemBinding.class)
-			       .onFistBind((v, m) ->
+			       .onBind((v, m) ->
 			       {
 				       v.txv.setText(m);
 				       v.btn.setText("삭제");
@@ -133,7 +134,7 @@ public class DLLActivity extends AppCompatActivity
 			       .apply()
 			
 			       .addGroup(addFront, R.layout.drv_item, DrvItemBinding.class)
-			       .onFistBind((v, m) ->
+			       .onBind((v, m) ->
 			       {
 				       v.txv.setText(m);
 				       v.btn.setText(m);
@@ -142,7 +143,7 @@ public class DLLActivity extends AppCompatActivity
 			       .apply()
 			
 			       .addGroup(addRear, R.layout.drv_item, DrvItemBinding.class)
-			       .onFistBind((v, m) ->
+			       .onBind((v, m) ->
 			       {
 				       v.txv.setText(m);
 				       v.btn.setText(m);
@@ -169,9 +170,9 @@ public class DLLActivity extends AppCompatActivity
 				       v.btn.setText("이동");
 				       v.btn.setOnClickListener(v1 ->
 				       {
-					       final int positionToMove = (int)(Math.random() * page.binding.drv.getItemCount());
-					       page.binding.drv.smoothScrollToPosition(positionToMove);
-					       v.txv.setText(String.format("%s/%s(으)로 이동했었다", positionToMove, page.binding.drv.getItemCount()));
+					       final int positionToMove = (int)(Math.random() * page.dll.getItemCount());
+					       page.scv.smoothScrollTo(0, (int)page.dll.getChildAt(positionToMove).getY());
+					       v.txv.setText(String.format("%s/%s(으)로 이동했었다", positionToMove, page.dll.getItemCount()));
 				       });
 			       })
 			       .apply()
@@ -207,8 +208,8 @@ public class DLLActivity extends AppCompatActivity
 			       .build();
 		});
 		
-		page.binding.btn1.setText("REMOVE");
-		page.binding.btn1.setOnClickListener(v ->
+		page.btn1.setText("REMOVE");
+		page.btn1.setOnClickListener(v ->
 		{
 			listFront.removeAll(selected);
 			listRear.removeAll(selected);
@@ -217,15 +218,15 @@ public class DLLActivity extends AppCompatActivity
 			selectedReal.clear();
 		});
 		
-		page.binding.btn2.setText("RETAIN");
-		page.binding.btn2.setOnClickListener(v ->
+		page.btn2.setText("RETAIN");
+		page.btn2.setOnClickListener(v ->
 		{
 			listFront.retainAll(selected);
 			listRear.retainAll(selected);
 		});
 		
-		page.binding.btn3.setText("MOVE");
-		page.binding.btn3.setOnClickListener(v ->
+		page.btn3.setText("MOVE");
+		page.btn3.setOnClickListener(v ->
 		{
 			if (selectedFront.size() == 2)
 			{
@@ -237,8 +238,8 @@ public class DLLActivity extends AppCompatActivity
 			}
 		});
 		
-		page.binding.btn4.setText("RESET");
-		page.binding.btn4.setOnClickListener(v ->
+		page.btn4.setText("RESET");
+		page.btn4.setOnClickListener(v ->
 		{
 			selected.clear();
 			selectedFront.clear();
@@ -248,7 +249,7 @@ public class DLLActivity extends AppCompatActivity
 		});
 	}
 	
-	private void buildSecondPage(@NonNull final DRVPage page)
+	private void buildSecondPage(@NonNull final DllPageBinding page)
 	{
 		final SingleModel<String> m0 = SingleModel.of("그냥");
 		final ListModel<Object> m1 = ListModel.of(Arrays.asList("", "", ""));
@@ -256,7 +257,7 @@ public class DLLActivity extends AppCompatActivity
 		final ListModel<Object> m2 = ListModel.of(Arrays.asList("", ""));
 		final SingleModel<String> m3 = SingleModel.of("난 마지막?");
 		
-		page.binding.drv.build(builder ->
+		page.dll.build(builder ->
 		{
 			builder.addGroup(m0, R.layout.drv_item, DrvItemBinding.class)
 			       .onBind((v, m) ->
@@ -300,8 +301,8 @@ public class DLLActivity extends AppCompatActivity
 			       .build();
 		});
 		
-		page.binding.btn1.setText("UPDATE");
-		page.binding.btn1.setOnClickListener(v ->
+		page.btn1.setText("UPDATE");
+		page.btn1.setOnClickListener(v ->
 		{
 			listModel.update(createRandomList());
 		});
