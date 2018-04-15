@@ -160,7 +160,7 @@ class DRVBuilderImpl implements DRVBuilder.Buildable
 		@Override
 		public GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func)
 		{
-			group.setOnFirstBind((m, v, position) -> func.accept(m, v));
+			group.setOnFirstBind((v, m, position) -> func.accept(v, m));
 			return this;
 		}
 		
@@ -174,7 +174,7 @@ class DRVBuilderImpl implements DRVBuilder.Buildable
 		@Override
 		public GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func)
 		{
-			group.setOnBind((m, v, position) -> func.accept(m, v));
+			group.setOnBind((v, m, position) -> func.accept(v, m));
 			return this;
 		}
 		
