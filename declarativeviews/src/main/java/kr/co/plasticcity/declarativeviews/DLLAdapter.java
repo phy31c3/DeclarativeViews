@@ -1,7 +1,9 @@
 package kr.co.plasticcity.declarativeviews;
 
+import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,61 +34,74 @@ public class DLLAdapter implements DRVNotifier
 		this.itemCount = 0;
 	}
 	
-	void release()
-	{
-		// TODO: 2018-04-15
-	}
-	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void notifyChanged(final int position)
 	{
-		// TODO: 2018-04-15
+		view.beginChange();
+		getGroupAt(position).onBind(view.getChild(position), position);
 	}
 	
 	@Override
 	public void notifyInserted(final int position)
 	{
 		reorder();
-		// TODO: 2018-04-15
+		view.add(position, createView(position));
 	}
 	
 	@Override
 	public void notifyRemoved(final int position)
 	{
 		reorder();
-		// TODO: 2018-04-15
+		view.remove(position);
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public void notifyRangeChanged(final int start, final int count)
 	{
-		// TODO: 2018-04-15
+		view.beginChange();
+		for (int i = 0 ; i < count ; ++i)
+		{
+			getGroupAt(start + i).onBind(view.getChild(start + i), start + i);
+		}
 	}
 	
 	@Override
 	public void notifyRangeInserted(final int start, final int count)
 	{
 		reorder();
-		// TODO: 2018-04-15
+		final List<View> views = new ArrayList<>();
+		for (int i = 0 ; i < count ; ++i)
+		{
+			views.add(createView(start + i));
+		}
+		view.addAll(start, views);
 	}
 	
 	@Override
 	public void notifyRangeRemoved(final int start, final int count)
 	{
 		reorder();
-		// TODO: 2018-04-15
+		view.removeRange(start, count);
 	}
 	
 	@Override
 	public void notifyMoved(final int from, final int to)
 	{
-		// TODO: 2018-04-15
+		view.move(from, to);
 	}
 	
 	void notifyDataSetChanged()
 	{
 		reorder();
-		// TODO: 2018-04-15
+		view.removeAll();
+		final List<View> views = new ArrayList<>();
+		for (int i = 0 ; i < itemCount ; ++i)
+		{
+			views.add(createView(i));
+		}
+		view.addAll(views);
 	}
 	
 	int getItemCount()
@@ -126,5 +141,22 @@ public class DLLAdapter implements DRVNotifier
 	private DRVGroup getGroupAt(final int position)
 	{
 		return groupMap.floorEntry(position).getValue();
+	}
+	
+	@NonNull
+	@SuppressWarnings("unchecked")
+	private View createView(final int position)
+	{
+		final DRVGroup group = getGroupAt(position);
+		final Object v = group.createView(view.viewGroup());
+		group.onFirstBind(v, position);
+		if (v instanceof ViewDataBinding)
+		{
+			return ((ViewDataBinding)v).getRoot();
+		}
+		else
+		{
+			return (View)v;
+		}
 	}
 }
