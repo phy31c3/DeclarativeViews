@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,48 +14,48 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
 import kr.co.plasticcity.declarativeviews.function.TriConsumer;
 
 /**
- * Created by JongsunYu on 2017-01-03.
+ * Created by JongsunYu on 2018-04-02.
  */
 
-class BuilderImpl implements Builder.Buildable
+class DLLBuilderImpl implements DLLBuilder.Buildable
 {
 	@NonNull
-	private final Consumer<DRVAdapter> applier;
+	private final Consumer<DLLAdapter> applier;
 	@NonNull
-	private final DRVAdapter adapter;
+	private final DLLAdapter adapter;
 	
-	BuilderImpl(@NonNull final Consumer<DRVAdapter> applier)
+	DLLBuilderImpl(@NonNull final DLLView view, @NonNull final Consumer<DLLAdapter> applier)
 	{
 		this.applier = applier;
-		this.adapter = new DRVAdapter();
+		this.adapter = new DLLAdapter(view);
 	}
 	
 	@Override
-	public <M> SingleGroupAdder<M, View> addGroup(@Nullable M model, int layoutResId)
+	public <M> GroupAdder<M, View> addGroup(@Nullable M model, int layoutResId)
 	{
 		return addGroup(model, layoutResId, View.class);
 	}
 	
 	@Override
-	public <M, V> SingleGroupAdder<M, V> addGroup(@Nullable final M model, final int layoutResId, @NonNull final Class<V> viewType)
+	public <M, V> GroupAdder<M, V> addGroup(@Nullable final M model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
 		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType));
 	}
 	
 	@Override
-	public <M, V> SingleGroupAdder<M, V> addGroup(@Nullable final M model, @NonNull final Supplier<V> supplier)
+	public <M, V> GroupAdder<M, V> addGroup(@Nullable final M model, @NonNull final Supplier<V> supplier)
 	{
 		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, supplier));
 	}
 	
 	@Override
-	public <M> SingleGroupAdder<M, View> addGroup(@NonNull final SingleModel<M> model, final int layoutResId)
+	public <M> GroupAdder<M, View> addGroup(@NonNull final SingleModel<M> model, final int layoutResId)
 	{
 		return addGroup(model, layoutResId, View.class);
 	}
 	
 	@Override
-	public <M, V> SingleGroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull final Class<V> viewType)
+	public <M, V> GroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
 		if (model instanceof DRVModel)
 		{
@@ -66,13 +66,13 @@ class BuilderImpl implements Builder.Buildable
 		}
 		else
 		{
-			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
+			Log.w("DeclarativeLinearLayout", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
 			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType));
 		}
 	}
 	
 	@Override
-	public <M, V> SingleGroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier)
+	public <M, V> GroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier)
 	{
 		if (model instanceof DRVModel)
 		{
@@ -83,7 +83,7 @@ class BuilderImpl implements Builder.Buildable
 		}
 		else
 		{
-			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
+			Log.w("DeclarativeLinearLayout", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
 			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier));
 		}
 	}
@@ -108,7 +108,7 @@ class BuilderImpl implements Builder.Buildable
 		{
 			if (model instanceof ListModel)
 			{
-				Log.w("DeclarativeRecyclerView", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
+				Log.w("DeclarativeLinearLayout", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
 			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, layoutResId, viewType));
 		}
@@ -128,7 +128,7 @@ class BuilderImpl implements Builder.Buildable
 		{
 			if (model instanceof ListModel)
 			{
-				Log.w("DeclarativeRecyclerView", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
+				Log.w("DeclarativeLinearLayout", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
 			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, supplier));
 		}
@@ -140,7 +140,7 @@ class BuilderImpl implements Builder.Buildable
 		applier.accept(adapter);
 	}
 	
-	private class GroupAdderImpl<M, V> implements SingleGroupAdder<M, V>
+	private class GroupAdderImpl<M, V> implements GroupAdder<M, V>
 	{
 		@NonNull
 		private final DRVGroup<M, V> group;
@@ -151,23 +151,16 @@ class BuilderImpl implements Builder.Buildable
 		}
 		
 		@Override
-		public SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> func)
+		public GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func)
 		{
-			group.setOnCreate(func);
+			group.setOnFirstBind((v, m, position) -> func.accept(v));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func)
+		public GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> func)
 		{
-			group.setOnFirstBind((m, v, position) -> func.accept(m, v));
-			return this;
-		}
-		
-		@Override
-		public GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, Position> func)
-		{
-			group.setOnFirstBind(func);
+			group.setOnFirstBind((v, m, position) -> func.accept(v, position));
 			return this;
 		}
 		
@@ -179,7 +172,7 @@ class BuilderImpl implements Builder.Buildable
 		}
 		
 		@Override
-		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, Position> func)
+		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
 		{
 			group.setOnBind(func);
 			return this;
@@ -189,7 +182,7 @@ class BuilderImpl implements Builder.Buildable
 		public Buildable apply()
 		{
 			adapter.addGroup(group);
-			return BuilderImpl.this;
+			return DLLBuilderImpl.this;
 		}
 	}
 }

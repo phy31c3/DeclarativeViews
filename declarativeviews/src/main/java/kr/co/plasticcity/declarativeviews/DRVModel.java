@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -369,17 +369,24 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	{
 		final List<Range> ranges = new ArrayList<>();
 		Range range = null;
+		int removed = 0;
 		for (int i = 0 ; i < list.size() ; ++i)
 		{
 			if (c.contains(list.get(i)))
 			{
-				if (range != null && range.isNext(i))
+				if (range == null)
+				{
+					range = new Range(i);
+					ranges.add(range);
+				}
+				else if (range.isNext(i))
 				{
 					range.increase();
 				}
 				else
 				{
-					range = new Range(i);
+					removed += range.count;
+					range = new Range(i, removed);
 					ranges.add(range);
 				}
 			}
@@ -400,17 +407,24 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	{
 		final List<Range> ranges = new ArrayList<>();
 		Range range = null;
+		int removed = 0;
 		for (int i = 0 ; i < list.size() ; ++i)
 		{
 			if (!c.contains(list.get(i)))
 			{
-				if (range != null && range.isNext(i))
+				if (range == null)
+				{
+					range = new Range(i);
+					ranges.add(range);
+				}
+				else if (range.isNext(i))
 				{
 					range.increase();
 				}
 				else
 				{
-					range = new Range(i);
+					removed += range.count;
+					range = new Range(i, removed);
 					ranges.add(range);
 				}
 			}
@@ -529,20 +543,30 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	
 	private class Range
 	{
+		private final int space;
 		private int start;
 		private int end;
 		private int count;
 		
 		private Range(final int start)
 		{
+			this.space = 0;
 			this.start = start;
 			this.end = start;
 			this.count = 1;
 		}
 		
+		private Range(final int start, final int space)
+		{
+			this.space = space;
+			this.start = start - space;
+			this.end = start - space;
+			this.count = 1;
+		}
+		
 		private boolean isNext(final int next)
 		{
-			return next == this.end + 1;
+			return next == this.end + space + 1;
 		}
 		
 		private void increase()

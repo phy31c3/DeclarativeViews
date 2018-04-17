@@ -1,8 +1,8 @@
-package kr.co.plasticcity.declarativeviews.sample.viewpager;
+package kr.co.plasticcity.declarativeviews.sample;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.util.Log;
 import android.view.View;
@@ -10,26 +10,25 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
-import kr.co.plasticcity.declarativeviews.recyclerview.DeclarativeRecyclerView;
-import kr.co.plasticcity.declarativeviews.recyclerview.ListModel;
-import kr.co.plasticcity.declarativeviews.sample.R;
-import kr.co.plasticcity.declarativeviews.sample.databinding.DvpItemPagerBinding;
-import kr.co.plasticcity.declarativeviews.viewpager.DeclarativeViewPager;
+import kr.co.plasticcity.declarativeviews.DeclarativeRecyclerView;
+import kr.co.plasticcity.declarativeviews.DeclarativeViewPager;
+import kr.co.plasticcity.declarativeviews.ListModel;
+import kr.co.plasticcity.declarativeviews.sample.databinding.DvpPageBinding;
 
-public class DVPSampleActivity extends Activity
+public class DVPActivity extends AppCompatActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.dvp_activity_sample);
+		setContentView(R.layout.dvp_activity);
 		
 		final DeclarativeRecyclerView rcv = findViewById(R.id.rcv);
 		rcv.setHasFixedSize(true);
 		rcv.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 		rcv.build(list ->
 		{
-			list.addGroup("", R.layout.dvp_item_list)
+			list.addGroup("", R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
@@ -37,7 +36,7 @@ public class DVPSampleActivity extends Activity
 				    dvp.build(pager ->
 				    {
 					    pager.setItemCount(6)
-					         .setPageView(R.layout.dvp_item_pager, DvpItemPagerBinding.class)
+					         .setPageView(R.layout.dvp_page, DvpPageBinding.class)
 					         .onPageCreated((v, position) ->
 					         {
 						         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
@@ -55,7 +54,7 @@ public class DVPSampleActivity extends Activity
 			    })
 			    .apply()
 			
-			    .addGroup("", R.layout.dvp_item_list)
+			    .addGroup("", R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
@@ -64,7 +63,7 @@ public class DVPSampleActivity extends Activity
 				    {
 					    pager.setItemCount(6)
 					         .setCircular()
-					         .setPageView(R.layout.dvp_item_pager)
+					         .setPageView(R.layout.dvp_page)
 					         .onPageCreated((v, position) ->
 					         {
 						         final View pnl = v.findViewById(R.id.pnl);
@@ -85,14 +84,14 @@ public class DVPSampleActivity extends Activity
 			    })
 			    .apply()
 			
-			    .addGroup("", R.layout.dvp_item_list_min_height)
+			    .addGroup("", R.layout.dvp_item_min_height)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
 				    dvp.build(pager ->
 				    {
 					    pager.setInfiniteMode(3)
-					         .setPageView(R.layout.dvp_item_pager, View.class)
+					         .setPageView(R.layout.dvp_page, View.class)
 					         .onPageCreated((v, position) ->
 					         {
 						         final View pnl = v.findViewById(R.id.pnl);
@@ -112,7 +111,7 @@ public class DVPSampleActivity extends Activity
 			    })
 			    .apply()
 			
-			    .addGroup("", R.layout.dvp_item_list_min_height)
+			    .addGroup("", R.layout.dvp_item_min_height)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
@@ -133,7 +132,7 @@ public class DVPSampleActivity extends Activity
 			    })
 			    .apply()
 			
-			    .addGroup(ListModel.of(Arrays.asList("", "", "")), R.layout.dvp_item_list)
+			    .addGroup(ListModel.of(Arrays.asList("", "", "")), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
@@ -141,7 +140,7 @@ public class DVPSampleActivity extends Activity
 				    dvp.build(pager ->
 				    {
 					    pager.setItemCount(6)
-					         .setPageView(R.layout.dvp_item_pager)
+					         .setPageView(R.layout.dvp_page)
 					         .onPageCreated((v, position) ->
 					         {
 						         final View pnl = v.findViewById(R.id.pnl);

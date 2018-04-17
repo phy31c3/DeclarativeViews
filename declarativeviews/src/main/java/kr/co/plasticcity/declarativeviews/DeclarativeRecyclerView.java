@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -33,14 +33,14 @@ public class DeclarativeRecyclerView extends RecyclerView
 		super(context, attrs, defStyle);
 	}
 	
-	public void build(@NonNull final Consumer<Builder> builder)
+	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder)
 	{
 		build(builder, null);
 	}
 	
-	public void build(@NonNull final Consumer<Builder> builder, @Nullable final LayoutManager layoutManager)
+	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder, @Nullable final LayoutManager layoutManager)
 	{
-		builder.accept(new BuilderImpl(adapter ->
+		builder.accept(new DRVBuilderImpl(adapter ->
 		{
 			this.adapter = adapter;
 			super.setAdapter(adapter);

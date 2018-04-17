@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -14,8 +14,10 @@ import kr.co.plasticcity.declarativeviews.function.TriConsumer;
  * Created by JongsunYu on 2017-01-03.
  */
 
-public interface Builder
+public interface DRVBuilder
 {
+	interface Builder extends DRVBuilder {}
+	
 	<M> SingleGroupAdder<M, View> addGroup(@NonNull final M model, final int layoutResId);
 	
 	<M, V> SingleGroupAdder<M, V> addGroup(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
@@ -38,15 +40,9 @@ public interface Builder
 	{
 		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
 		
-		/**
-		 * Ensures that the model (the first param of BiConsumer) is not null.
-		 */
 		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
 		
-		/**
-		 * Ensures that the model (the first param of TriConsumer) is not null.
-		 */
-		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, Position> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 		
 		Buildable apply();
 	}
@@ -55,31 +51,13 @@ public interface Builder
 	{
 		SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
 		
-		/**
-		 * Ensures that the model (the first param of BiConsumer) is not null.
-		 */
 		GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func);
 		
-		/**
-		 * Ensures that the model (the first param of BiConsumer) is not null.
-		 */
-		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, Position> func);
+		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
 	}
 	
 	interface Buildable extends Builder
 	{
 		void build();
-	}
-	
-	class Position
-	{
-		public final int inGroup;
-		public final int inList;
-		
-		Position(final int inGroup, final int inList)
-		{
-			this.inGroup = inGroup;
-			this.inList = inList;
-		}
 	}
 }
