@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.viewpager;
+package kr.co.plasticcity.declarativeviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -40,9 +40,9 @@ public class DeclarativeViewPager extends ViewPager
 	/**
 	 * should call this method first
 	 */
-	public void build(@NonNull Consumer<Builder> builder)
+	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
-		builder.accept(new BuilderImpl(adapter ->
+		builder.accept(new DVPBuilderImpl(adapter ->
 		{
 			this.adapter = adapter;
 			onAttachedToWindow(); // for prevent slow 'first setCurrentItem'

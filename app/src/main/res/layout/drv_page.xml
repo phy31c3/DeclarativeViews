@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <kr.co.plasticcity.declarativeviews.sample.DRVPage
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <kr.co.plasticcity.declarativeviews.DeclarativeRecyclerView
+            android:id="@+id/drv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottom"/>
+
+        <LinearLayout
+            android:id="@+id/bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#FFFFFFFF"
+            android:elevation="6dp"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <Button
+                android:id="@+id/btn_1"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/btn_2"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/btn_3"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/btn_4"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+    </kr.co.plasticcity.declarativeviews.sample.DRVPage>
+
+</layout>

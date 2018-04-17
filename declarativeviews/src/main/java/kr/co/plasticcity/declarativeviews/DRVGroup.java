@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.recyclerview;
+package kr.co.plasticcity.declarativeviews;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -30,8 +30,8 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	private final int layoutResId;
 	
 	private Consumer<V> onCreate;
-	private TriConsumer<V, M, Builder.Position> onFirstBind;
-	private TriConsumer<V, M, Builder.Position> onBind;
+	private TriConsumer<V, M, ItemPosition> onFirstBind;
+	private TriConsumer<V, M, ItemPosition> onBind;
 	private int position;
 	
 	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, final int layoutResId, @NonNull final Class<V> viewType)
@@ -57,12 +57,12 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		this.onCreate = onCreate;
 	}
 	
-	void setOnFirstBind(@NonNull final TriConsumer<V, M, Builder.Position> onFirstBind)
+	void setOnFirstBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind)
 	{
 		this.onFirstBind = onFirstBind;
 	}
 	
-	void setOnBind(@NonNull final TriConsumer<V, M, Builder.Position> onBind)
+	void setOnBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind)
 	{
 		this.onBind = onBind;
 	}
@@ -103,17 +103,21 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		return v;
 	}
 	
-	void onFirstBind(@NonNull final V v, final int pos)
+	/**
+	 * @return if the onFirstBind exists, return true. Else return false.
+	 */
+	boolean onFirstBind(@NonNull final V v, final int pos)
 	{
 		final int local = pos - this.position;
 		final M m = model.get(local);
 		if (m != null && onFirstBind != null)
 		{
-			onFirstBind.accept(v, m, new Builder.Position(local, pos));
+			onFirstBind.accept(v, m, new ItemPosition(local, pos));
+			return true;
 		}
-		else if (m != null && onBind != null)
+		else
 		{
-			onBind.accept(v, m, new Builder.Position(local, pos));
+			return false;
 		}
 	}
 	
@@ -123,7 +127,7 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		final M m = model.get(local);
 		if (m != null && onBind != null)
 		{
-			onBind.accept(v, m, new Builder.Position(local, pos));
+			onBind.accept(v, m, new ItemPosition(local, pos));
 		}
 	}
 	

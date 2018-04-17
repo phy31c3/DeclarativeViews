@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <kr.co.plasticcity.declarativeviews.sample.recyclerview.PageSample
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="kr.co.plasticcity.declarativerecyclerview.sample.DRVSampleActivity">
+        android:layout_height="match_parent">
 
-        <kr.co.plasticcity.declarativeviews.recyclerview.DeclarativeRecyclerView
-            android:id="@+id/drv"
+        <ScrollView
+            android:id="@+id/scv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/bottom"/>
+            android:layout_above="@+id/bottom"
+            android:fillViewport="true">
+
+            <kr.co.plasticcity.declarativeviews.DeclarativeLinearLayout
+                android:id="@+id/dll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+        </ScrollView>
 
         <LinearLayout
             android:id="@+id/bottom"
@@ -49,6 +56,6 @@
 
         </LinearLayout>
 
-    </kr.co.plasticcity.declarativeviews.sample.recyclerview.PageSample>
+    </RelativeLayout>
 
 </layout>

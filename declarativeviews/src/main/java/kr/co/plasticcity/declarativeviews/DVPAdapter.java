@@ -1,4 +1,4 @@
-package kr.co.plasticcity.declarativeviews.viewpager;
+package kr.co.plasticcity.declarativeviews;
 
 import android.annotation.SuppressLint;
 import android.databinding.DataBindingUtil;
