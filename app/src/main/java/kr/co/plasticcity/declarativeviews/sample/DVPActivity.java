@@ -111,7 +111,7 @@ public class DVPActivity extends AppCompatActivity
 			    })
 			    .apply()
 			
-			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6)), R.layout.dvp_item)
+			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6, 7, 8, 9)), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
@@ -141,7 +141,7 @@ public class DVPActivity extends AppCompatActivity
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
 				    dvp.setTag(pos);
-				    dvp.setCurrentItem(pos);
+				    dvp.setCurrentItem(pos % 7);
 			    })
 			    .apply()
 			

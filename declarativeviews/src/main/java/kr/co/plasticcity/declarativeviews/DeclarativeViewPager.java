@@ -45,7 +45,7 @@ public class DeclarativeViewPager extends ViewPager
 		builder.accept(new DVPBuilderImpl(adapter ->
 		{
 			this.adapter = adapter;
-			onAttachedToWindow(); // For prevent slow 'first setCurrentItem'
+			super.onAttachedToWindow(); // For prevent slow 'first setCurrentItem'
 			super.setAdapter(adapter);
 			super.setCurrentItem(adapter.getPositionZero());
 			super.setOffscreenPageLimit(adapter.getOffscreenPageLimit());
@@ -233,6 +233,7 @@ public class DeclarativeViewPager extends ViewPager
 	@Override
 	public void setPageTransformer(final boolean reverseDrawingOrder, final PageTransformer transformer)
 	{
+		// To make it call later than the builder's setPageTransformer call
 		post(() -> super.setPageTransformer(reverseDrawingOrder, transformer));
 	}
 	
@@ -242,6 +243,7 @@ public class DeclarativeViewPager extends ViewPager
 	@Override
 	public void setPageTransformer(final boolean reverseDrawingOrder, final PageTransformer transformer, final int pageLayerType)
 	{
+		// To make it call later than the builder's setPageTransformer call
 		post(() -> super.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType));
 	}
 	
@@ -303,6 +305,13 @@ public class DeclarativeViewPager extends ViewPager
 		}
 		
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
+	
+	@Override
+	protected void onAttachedToWindow()
+	{
+		super.onAttachedToWindow();
+		requestLayout(); // To avoid quickly scrolling in RecyclerView
 	}
 	
 	private MotionEvent swapXY(final MotionEvent ev)
