@@ -1,6 +1,13 @@
 package kr.co.plasticcity.declarativeviews;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -93,5 +100,51 @@ public class DeclarativeRecyclerView extends RecyclerView
 	public void setAdapter(@Nullable final Adapter adapter)
 	{
 		/* empty */
+	}
+	
+	/* ############################################################
+	 * for background scrolling
+	 * ############################################################ */
+	
+	@Nullable
+	private Paint backgroundPaint;
+	private int backgroundY;
+	
+	@Override
+	public void setBackgroundDrawable(final Drawable background)
+	{
+		if (background instanceof BitmapDrawable)
+		{
+			super.setBackground(null);
+			final BitmapDrawable bitmapDrawable = (BitmapDrawable)background;
+			final Bitmap bitmap = bitmapDrawable.getBitmap();
+			final BitmapShader bitmapShader = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+			backgroundPaint = new Paint();
+			backgroundPaint.setShader(bitmapShader);
+		}
+		else
+		{
+			super.setBackgroundDrawable(background);
+			backgroundPaint = null;
+		}
+	}
+	
+	@Override
+	public void onScrolled(final int dx, final int dy)
+	{
+		super.onScrolled(dx, dy);
+		backgroundY -= dy;
+	}
+	
+	@Override
+	public void onDraw(final Canvas c)
+	{
+		if (backgroundPaint != null)
+		{
+			c.translate(0, backgroundY);
+			c.drawPaint(backgroundPaint);
+			c.translate(0, -backgroundY);
+		}
+		super.onDraw(c);
 	}
 }
