@@ -103,7 +103,7 @@ public class DeclarativeRecyclerView extends RecyclerView
 	}
 	
 	/* ############################################################
-	 * for background scrolling
+	 * For background scrolling
 	 * ############################################################ */
 	
 	@Nullable
