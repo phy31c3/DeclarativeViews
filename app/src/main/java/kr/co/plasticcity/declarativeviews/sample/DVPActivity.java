@@ -105,41 +105,20 @@ public class DVPActivity extends AppCompatActivity
 					         {
 						         Log.d("DeclarativeViewPager", "3rd: " + position);
 					         })
-					         .setVertical()
 					         .build();
 				    });
+				    dvp.setCurrentItem(-1);
 			    })
 			    .apply()
 			
-			    .addGroup("", R.layout.dvp_item_min_height)
-			    .onCreate(view ->
-			    {
-				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
-				    dvp.build(pager ->
-				    {
-					    pager.setInfiniteMode(3)
-					         .setPageView(() -> new TextView(this))
-					         .onPageCreated((v, position) ->
-					         {
-						         v.setText("Page " + position);
-					         })
-					         .onPageSelected(position ->
-					         {
-						         Log.d("DeclarativeViewPager", "3rd: " + position);
-					         })
-					         .build();
-				    });
-			    })
-			    .apply()
-			
-			    .addGroup(ListModel.of(Arrays.asList("", "", "")), R.layout.dvp_item)
+			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6, 7, 8, 9)), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
 				    final TabLayout tab = view.findViewById(R.id.tab);
 				    dvp.build(pager ->
 				    {
-					    pager.setItemCount(6)
+					    pager.setItemCount(7)
 					         .setPageView(R.layout.dvp_page)
 					         .onPageCreated((v, position) ->
 					         {
@@ -152,11 +131,17 @@ public class DVPActivity extends AppCompatActivity
 					         })
 					         .onPageSelected(position ->
 					         {
-						         Log.d("DeclarativeViewPager", "1st: " + position);
+						         Log.d("DeclarativeViewPager", String.format("%sth: %d", dvp.getTag(), position));
 					         })
 					         .build();
 				    });
 				    tab.setupWithViewPager(dvp);
+			    })
+			    .onBind((view, pos) ->
+			    {
+				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
+				    dvp.setTag(pos);
+				    dvp.setCurrentItem(pos % 7);
 			    })
 			    .apply()
 			
