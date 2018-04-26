@@ -9,7 +9,8 @@
             android:id="@+id/drv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/bottom"/>
+            android:layout_above="@+id/bottom"
+            android:background="@drawable/bg_paper_img"/>
 
         <LinearLayout
             android:id="@+id/bottom"

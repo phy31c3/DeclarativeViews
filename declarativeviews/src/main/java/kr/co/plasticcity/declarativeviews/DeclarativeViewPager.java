@@ -38,14 +38,14 @@ public class DeclarativeViewPager extends ViewPager
 	}
 	
 	/**
-	 * should call this method first
+	 * Should call this method first
 	 */
 	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
 		builder.accept(new DVPBuilderImpl(adapter ->
 		{
 			this.adapter = adapter;
-			onAttachedToWindow(); // for prevent slow 'first setCurrentItem'
+			super.onAttachedToWindow(); // For prevent slow 'first setCurrentItem'
 			super.setAdapter(adapter);
 			super.setCurrentItem(adapter.getPositionZero());
 			super.setOffscreenPageLimit(adapter.getOffscreenPageLimit());
@@ -72,8 +72,11 @@ public class DeclarativeViewPager extends ViewPager
 			});
 			post(() ->
 			{
-				super.requestLayout(); // for ViewPager's height is wrap_content
-				adapter.onPageSelected(adapter.getPositionZero()); // ensure that onPageSelected(0) is called after build
+				super.requestLayout(); // For ViewPager's height is wrap_content
+				if (getCurrentItem() == 0)
+				{
+					adapter.onPageSelected(adapter.getPositionZero()); // To call A for the first visible page
+				}
 				if (adapter.isVertical())
 				{
 					super.setPageTransformer(true, (page, position) ->
@@ -230,6 +233,7 @@ public class DeclarativeViewPager extends ViewPager
 	@Override
 	public void setPageTransformer(final boolean reverseDrawingOrder, final PageTransformer transformer)
 	{
+		// To make it call later than the builder's setPageTransformer call
 		post(() -> super.setPageTransformer(reverseDrawingOrder, transformer));
 	}
 	
@@ -239,6 +243,7 @@ public class DeclarativeViewPager extends ViewPager
 	@Override
 	public void setPageTransformer(final boolean reverseDrawingOrder, final PageTransformer transformer, final int pageLayerType)
 	{
+		// To make it call later than the builder's setPageTransformer call
 		post(() -> super.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType));
 	}
 	
@@ -300,6 +305,13 @@ public class DeclarativeViewPager extends ViewPager
 		}
 		
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
+	
+	@Override
+	protected void onAttachedToWindow()
+	{
+		super.onAttachedToWindow();
+		requestLayout(); // To avoid quickly scrolling in RecyclerView
 	}
 	
 	private MotionEvent swapXY(final MotionEvent ev)
