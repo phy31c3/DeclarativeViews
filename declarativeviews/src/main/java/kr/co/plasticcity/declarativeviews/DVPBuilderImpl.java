@@ -1,6 +1,8 @@
 package kr.co.plasticcity.declarativeviews;
 
 import android.databinding.ViewDataBinding;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -16,12 +18,12 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
 class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 {
 	@NonNull
-	private final Consumer<DVPAdapter> registrator;
+	private final BiConsumer<DVPAdapter, Integer> registrator;
 	private int itemCount;
 	private int offscreenPageLimit;
 	private boolean circular;
 	
-	DVPBuilderImpl(@NonNull final Consumer<DVPAdapter> registrator)
+	DVPBuilderImpl(@NonNull final BiConsumer<DVPAdapter, Integer> registrator)
 	{
 		this.registrator = registrator;
 	}
@@ -47,7 +49,6 @@ class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 	public SetPageView setCircular()
 	{
 		this.circular = true;
-		this.offscreenPageLimit = offscreenPageLimit % 2 == 0 ? offscreenPageLimit / 2 - 1 : offscreenPageLimit / 2;
 		return this;
 	}
 	
@@ -130,7 +131,23 @@ class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 		public void build()
 		{
 			final boolean useDataBinding = viewType != null && viewType.getSuperclass() != null && viewType.getSuperclass().equals(ViewDataBinding.class);
-			registrator.accept(new DVPAdapter<>(layoutResId, useDataBinding, itemCount, offscreenPageLimit, circular, vertical, viewSupplier, onPageCreated, onPageDestroyed, onPageSelected));
+			registrator.accept(new DVPAdapter<>(layoutResId, useDataBinding, itemCount, circular, vertical, viewSupplier, onPageCreated, onPageDestroyed, onPageSelected), offscreenPageLimit);
+		}
+		
+		@Override
+		public void buildOnUiThread()
+		{
+			new Handler(Looper.getMainLooper()).post(this::build);
+		}
+		
+		@Override
+		public void buildOnUiThread(@NonNull final Runnable onBuildFinished)
+		{
+			new Handler(Looper.getMainLooper()).post(() ->
+			{
+				build();
+				onBuildFinished.run();
+			});
 		}
 	}
 }

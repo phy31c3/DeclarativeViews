@@ -2,7 +2,9 @@ package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
+import java.util.Collection;
 import java.util.List;
 
 import kr.co.plasticcity.declarativeviews.function.BiFunction;
@@ -45,6 +47,7 @@ public interface ListModel<M> extends List<M>
 	 *
 	 * @param index Should be valid index. {@literal (0 <= index < size)}
 	 */
+	@UiThread
 	void replace(final int index, @NonNull final Function<M, M> f);
 	
 	/**
@@ -53,8 +56,10 @@ public interface ListModel<M> extends List<M>
 	 * @param start Should be valid index. {@literal (0 <= start <= end)}
 	 * @param end   Should be valid index. {@literal (start <= end < size)}
 	 */
+	@UiThread
 	void replaceRange(final int start, final int end, @NonNull final BiFunction<M, Integer, M> f);
 	
+	@UiThread
 	void move(final int from, final int to);
 	
 	/**
@@ -66,6 +71,7 @@ public interface ListModel<M> extends List<M>
 	 *
 	 * @param l List with the same order as the original list.
 	 */
+	@UiThread
 	void update(@NonNull final List<M> l);
 	
 	/**
@@ -79,13 +85,59 @@ public interface ListModel<M> extends List<M>
 	/**
 	 * @param index Should be valid index. {@literal (0 <= index < size)}
 	 */
+	@UiThread
 	void performChanged(final int index);
 	
 	/**
 	 * @param start Should be valid index. {@literal (0 <= start <= end)}
 	 * @param end   Should be valid index. {@literal (start <= end < size)}
 	 */
+	@UiThread
 	void performRangeChanged(final int start, final int end);
 	
+	@UiThread
 	void performAllChanged();
+	
+	/////////////////////////////////////////////////////////////////////////
+	// from List<M>
+	/////////////////////////////////////////////////////////////////////////
+	@Override
+	@UiThread
+	M set(int index, M element);
+	
+	@Override
+	@UiThread
+	boolean add(M m);
+	
+	@Override
+	@UiThread
+	void add(int index, M element);
+	
+	@Override
+	@UiThread
+	boolean addAll(@NonNull Collection<? extends M> c);
+	
+	@Override
+	@UiThread
+	boolean addAll(int index, @NonNull Collection<? extends M> c);
+	
+	@Override
+	@UiThread
+	M remove(int index);
+	
+	@Override
+	@UiThread
+	boolean remove(Object o);
+	
+	@Override
+	@UiThread
+	boolean removeAll(@NonNull Collection<?> c);
+	
+	@Override
+	@UiThread
+	boolean retainAll(@NonNull Collection<?> c);
+	
+	@Override
+	@UiThread
+	void clear();
 }

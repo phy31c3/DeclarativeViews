@@ -4,14 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import kr.co.plasticcity.declarativeviews.function.Consumer;
 
@@ -23,8 +22,8 @@ public class DeclarativeViewPager extends ViewPager
 {
 	@Nullable
 	private DVPAdapter adapter;
-	@NonNull
-	private final AtomicBoolean scrolling;
+	private boolean scrolling;
+	private boolean swipeDisabled;
 	
 	public DeclarativeViewPager(final Context context)
 	{
@@ -34,7 +33,8 @@ public class DeclarativeViewPager extends ViewPager
 	public DeclarativeViewPager(final Context context, final AttributeSet attrs)
 	{
 		super(context, attrs);
-		this.scrolling = new AtomicBoolean(false);
+		this.scrolling = false;
+		this.swipeDisabled = false;
 	}
 	
 	/**
@@ -42,13 +42,15 @@ public class DeclarativeViewPager extends ViewPager
 	 */
 	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
-		builder.accept(new DVPBuilderImpl(adapter ->
+		builder.accept(new DVPBuilderImpl((adapter, offscreenPageLimit) ->
 		{
+			super.setAdapter(null);
 			this.adapter = adapter;
+			setOffscreenPageLimit(offscreenPageLimit);
+			
 			super.onAttachedToWindow(); // For prevent slow 'first setCurrentItem'
 			super.setAdapter(adapter);
 			super.setCurrentItem(adapter.getPositionZero());
-			super.setOffscreenPageLimit(adapter.getOffscreenPageLimit());
 			super.clearOnPageChangeListeners();
 			super.addOnPageChangeListener(new OnPageChangeListener()
 			{
@@ -67,7 +69,7 @@ public class DeclarativeViewPager extends ViewPager
 				@Override
 				public void onPageScrollStateChanged(final int state)
 				{
-					scrolling.set(state != SCROLL_STATE_IDLE);
+					scrolling = state != SCROLL_STATE_IDLE;
 				}
 			});
 			post(() ->
@@ -109,29 +111,47 @@ public class DeclarativeViewPager extends ViewPager
 	/**
 	 * It makes current postion to 0 and all pages will be recreated
 	 */
+	@UiThread
 	public void reset()
 	{
 		if (adapter != null)
 		{
-			adapter.setCenterPositionTo(super.getCurrentItem());
+			adapter.setPositionZero(super.getCurrentItem()); // for rapid position switching, making current position to center position
 			adapter.notifyDataSetChanged();
 		}
 	}
 	
+	@UiThread
 	public void showNext()
 	{
-		if (!scrolling.get())
+		if (!scrolling)
 		{
 			setCurrentItem(getCurrentItem() + 1);
 		}
 	}
 	
+	@UiThread
 	public void showPrev()
 	{
-		if (!scrolling.get())
+		if (!scrolling)
 		{
 			setCurrentItem(getCurrentItem() - 1);
 		}
+	}
+	
+	public boolean isSwipedEnabled()
+	{
+		return !swipeDisabled;
+	}
+	
+	public void setSwipeEnabled()
+	{
+		swipeDisabled = false;
+	}
+	
+	public void setSwipeDisabled()
+	{
+		swipeDisabled = true;
 	}
 	
 	/**
@@ -159,10 +179,18 @@ public class DeclarativeViewPager extends ViewPager
 	}
 	
 	@Override
-	@Deprecated
-	public void setOffscreenPageLimit(final int limit)
+	public void setOffscreenPageLimit(int limit)
 	{
-		/* empty */
+		if (adapter != null && adapter.isPureCircular())
+		{
+			final int itemCount = adapter.getItemCount();
+			final int maxLimit = itemCount % 2 == 0 ? itemCount / 2 - 1 : itemCount / 2;
+			if (limit > maxLimit)
+			{
+				limit = maxLimit;
+			}
+		}
+		super.setOffscreenPageLimit(limit);
 	}
 	
 	@Override
@@ -250,7 +278,11 @@ public class DeclarativeViewPager extends ViewPager
 	@Override
 	public boolean onInterceptTouchEvent(final MotionEvent ev)
 	{
-		if (adapter != null && adapter.isVertical())
+		if (swipeDisabled)
+		{
+			return false;
+		}
+		else if (adapter != null && adapter.isVertical())
 		{
 			boolean intercepted = super.onInterceptTouchEvent(swapXY(ev));
 			swapXY(ev);
@@ -266,7 +298,11 @@ public class DeclarativeViewPager extends ViewPager
 	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(final MotionEvent ev)
 	{
-		if (adapter != null && adapter.isVertical())
+		if (swipeDisabled)
+		{
+			return false;
+		}
+		else if (adapter != null && adapter.isVertical())
 		{
 			return super.onTouchEvent(swapXY(ev));
 		}

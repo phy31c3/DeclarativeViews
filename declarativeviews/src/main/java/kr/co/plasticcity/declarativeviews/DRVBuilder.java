@@ -59,5 +59,9 @@ public interface DRVBuilder
 	interface Buildable extends Builder
 	{
 		void build();
+		
+		void buildOnUiThread();
+		
+		void buildOnUiThread(@NonNull final Runnable onBuildFinished);
 	}
 }

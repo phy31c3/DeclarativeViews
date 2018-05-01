@@ -1,5 +1,7 @@
 package kr.co.plasticcity.declarativeviews;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -138,6 +140,22 @@ class DRVBuilderImpl implements DRVBuilder.Buildable
 	public void build()
 	{
 		applier.accept(adapter);
+	}
+	
+	@Override
+	public void buildOnUiThread()
+	{
+		new Handler(Looper.getMainLooper()).post(this::build);
+	}
+	
+	@Override
+	public void buildOnUiThread(@NonNull final Runnable onBuildFinished)
+	{
+		new Handler(Looper.getMainLooper()).post(() ->
+		{
+			build();
+			onBuildFinished.run();
+		});
 	}
 	
 	private class GroupAdderImpl<M, V> implements SingleGroupAdder<M, V>
