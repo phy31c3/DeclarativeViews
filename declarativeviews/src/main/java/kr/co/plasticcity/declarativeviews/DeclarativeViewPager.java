@@ -2,7 +2,6 @@ package kr.co.plasticcity.declarativeviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -41,7 +40,6 @@ public class DeclarativeViewPager extends ViewPager
 	/**
 	 * Should call this method first
 	 */
-	@AnyThread
 	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
 		builder.accept(new DVPBuilderImpl((adapter, offscreenPageLimit) ->
@@ -141,19 +139,16 @@ public class DeclarativeViewPager extends ViewPager
 		}
 	}
 	
-	@UiThread
 	public boolean isSwipedEnabled()
 	{
 		return !swipeDisabled;
 	}
 	
-	@UiThread
 	public void setSwipeEnabled()
 	{
 		swipeDisabled = false;
 	}
 	
-	@UiThread
 	public void setSwipeDisabled()
 	{
 		swipeDisabled = true;

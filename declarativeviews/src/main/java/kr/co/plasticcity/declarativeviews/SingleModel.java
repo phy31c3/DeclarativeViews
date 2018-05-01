@@ -2,6 +2,7 @@ package kr.co.plasticcity.declarativeviews;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,13 +36,16 @@ public interface SingleModel<M>
 	@Nullable
 	M get();
 	
+	@UiThread
 	void set(@NonNull final M m);
 	
 	/**
 	 * If SignleModel is empty or model (M) is null, the function is not called.
 	 */
+	@UiThread
 	void replace(@NonNull final Function<M, M> f);
 	
+	@UiThread
 	void remove();
 	
 	int getPositionInList();
@@ -49,5 +53,6 @@ public interface SingleModel<M>
 	/**
 	 * Forcibly notifies the model has changed and invokes onBind.
 	 */
+	@UiThread
 	void performChanged();
 }
