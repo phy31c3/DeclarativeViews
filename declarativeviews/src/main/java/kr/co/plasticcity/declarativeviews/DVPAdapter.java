@@ -25,7 +25,6 @@ class DVPAdapter<V> extends PagerAdapter
 	private final int layoutResId;
 	private final boolean useDataBinding;
 	private final int itemCount;
-	private final int offscreenPageLimit;
 	private final boolean circular;
 	private final boolean vertical;
 	@Nullable
@@ -38,7 +37,7 @@ class DVPAdapter<V> extends PagerAdapter
 	private final Consumer<Integer> onPageSelected;
 	
 	@SuppressLint("UseSparseArrays")
-	DVPAdapter(final int layoutResId, final boolean useDataBinding, final int itemCount, final int offscreenPageLimit, final boolean circular, final boolean vertical,
+	DVPAdapter(final int layoutResId, final boolean useDataBinding, final int itemCount, final boolean circular, final boolean vertical,
 	           @Nullable final Supplier<V> viewSupplier,
 	           @Nullable final BiConsumer<V, Integer> onPageCreated,
 	           @Nullable final Consumer<Integer> onPageDestroyed,
@@ -47,7 +46,6 @@ class DVPAdapter<V> extends PagerAdapter
 		this.layoutResId = layoutResId;
 		this.useDataBinding = useDataBinding;
 		this.itemCount = itemCount;
-		this.offscreenPageLimit = offscreenPageLimit;
 		this.circular = circular;
 		this.vertical = vertical;
 		this.viewSupplier = viewSupplier;
@@ -131,9 +129,12 @@ class DVPAdapter<V> extends PagerAdapter
 		return view == object;
 	}
 	
-	int getOffscreenPageLimit()
+	/**
+	 * @return only circular, not infinite
+	 */
+	boolean isPureCircular()
 	{
-		return offscreenPageLimit;
+		return circular && !isInfinite();
 	}
 	
 	boolean isVertical()
@@ -141,11 +142,16 @@ class DVPAdapter<V> extends PagerAdapter
 		return vertical;
 	}
 	
+	int getItemCount()
+	{
+		return itemCount;
+	}
+	
 	int getPositionZero()
 	{
 		if (circular)
 		{
-			return MAXCNT / 2;
+			return center;
 		}
 		else
 		{
@@ -153,14 +159,14 @@ class DVPAdapter<V> extends PagerAdapter
 		}
 	}
 	
-	void setCenterPositionTo(final int curIn)
+	void setPositionZero(final int in)
 	{
-		center = curIn;
+		center = in;
 	}
 	
 	int inToOut(final int in)
 	{
-		if (isInfiniteMode())
+		if (isInfinite())
 		{
 			return in - center;
 		}
@@ -178,7 +184,7 @@ class DVPAdapter<V> extends PagerAdapter
 	
 	int outToIn(final int out, final int curIn)
 	{
-		if (isInfiniteMode())
+		if (isInfinite())
 		{
 			return out + center;
 		}
@@ -212,8 +218,8 @@ class DVPAdapter<V> extends PagerAdapter
 		};
 	}
 	
-	private boolean isInfiniteMode()
+	private boolean isInfinite()
 	{
-		return itemCount < 1;
+		return circular && itemCount == 0;
 	}
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.View;
@@ -47,6 +48,7 @@ public class DeclarativeLinearLayout extends LinearLayout implements DLLView
 		}));
 	}
 	
+	@UiThread
 	public void notifyDataSetChanged()
 	{
 		if (adapter != null)
