@@ -40,6 +40,7 @@ public class DeclarativeViewPager extends ViewPager
 	/**
 	 * Should call this method first
 	 */
+	@UiThread
 	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
 		builder.accept(new DVPBuilderImpl((adapter, offscreenPageLimit) ->
@@ -111,6 +112,7 @@ public class DeclarativeViewPager extends ViewPager
 	/**
 	 * It makes current postion to 0 and all pages will be recreated
 	 */
+	@UiThread
 	public void reset()
 	{
 		if (adapter != null)
@@ -120,6 +122,7 @@ public class DeclarativeViewPager extends ViewPager
 		}
 	}
 	
+	@UiThread
 	public void showNext()
 	{
 		if (!scrolling)
@@ -128,6 +131,7 @@ public class DeclarativeViewPager extends ViewPager
 		}
 	}
 	
+	@UiThread
 	public void showPrev()
 	{
 		if (!scrolling)
