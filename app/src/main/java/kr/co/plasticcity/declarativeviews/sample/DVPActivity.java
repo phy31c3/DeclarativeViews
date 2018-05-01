@@ -36,30 +36,23 @@ public class DVPActivity extends AppCompatActivity
 				    dvp.build(pager ->
 				    {
 					    pager.setItemCount(6)
+					         .setCircular()
 					         .setPageView(R.layout.dvp_page, DvpPageBinding.class)
 					         .onPageCreated((v, position) ->
 					         {
+						         Log.d("DeclarativeViewPager", "1st created: " + position);
+						         
 						         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
 						         v.pnl.setBackgroundColor(color);
 						         v.txv.setOnClickListener(view1 ->
 						         {
-							         if (dvp.isSwipedEnabled())
-							         {
-								         dvp.setSwipeDisabled();
-							         }
-							         else
-							         {
-								         dvp.setSwipeEnabled();
-							         }
+							         dvp.setOffscreenPageLimit(10);
 						         });
 						         v.txv.setText("Page " + position);
 					         })
-					         .onPageSelected(position ->
-					         {
-						         Log.d("DeclarativeViewPager", "1st: " + position);
-					         })
 					         .build();
 				    });
+				    dvp.setOffscreenPageLimit(1);
 				    tab.setupWithViewPager(dvp);
 			    })
 			    .apply()
@@ -71,30 +64,33 @@ public class DVPActivity extends AppCompatActivity
 				    final TabLayout tab = view.findViewById(R.id.tab);
 				    dvp.build(pager ->
 				    {
-					    pager.setItemCount(6)
-					         .setCircular()
-					         .setPageView(R.layout.dvp_page)
-					         .onPageCreated((v, position) ->
-					         {
-						         final View pnl = v.findViewById(R.id.pnl);
-						         final TextView txv = v.findViewById(R.id.txv);
-						         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
-						         pnl.setBackgroundColor(color);
-						         txv.setOnClickListener(view1 -> dvp.reset());
-						         txv.setText("Page " + position);
-					         })
-					         .onPageSelected(position ->
-					         {
-						         Log.d("DeclarativeViewPager", "2nd: " + position);
-					         })
-					         .build();
+				    	dvp.post(() ->
+					    {
+						    pager.setItemCount(6)
+						         .setCircular()
+						         .setPageView(R.layout.dvp_page)
+						         .onPageCreated((v, position) ->
+						         {
+							         final View pnl = v.findViewById(R.id.pnl);
+							         final TextView txv = v.findViewById(R.id.txv);
+							         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
+							         pnl.setBackgroundColor(color);
+							         txv.setOnClickListener(view1 -> dvp.reset());
+							         txv.setText("Page " + position);
+						         })
+						         .onPageSelected(position ->
+						         {
+							         Log.d("DeclarativeViewPager", "2nd: " + position);
+						         })
+						         .build();
+						    dvp.setSwipeDisabled();
+						    tab.setupWithViewPager(dvp);
+						    next(dvp);
+					    });
 				    });
-				    dvp.setSwipeDisabled();
-				    tab.setupWithViewPager(dvp);
-				    next(dvp);
 			    })
 			    .apply()
-			
+
 			    .addGroup("", R.layout.dvp_item_min_height)
 			    .onCreate(view ->
 			    {
@@ -121,7 +117,7 @@ public class DVPActivity extends AppCompatActivity
 				    dvp.setCurrentItem(-1);
 			    })
 			    .apply()
-			
+
 			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6, 7, 8, 9)), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {

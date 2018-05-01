@@ -42,13 +42,15 @@ public class DeclarativeViewPager extends ViewPager
 	 */
 	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
-		builder.accept(new DVPBuilderImpl(adapter ->
+		builder.accept(new DVPBuilderImpl((adapter, offscreenPageLimit) ->
 		{
+			super.setAdapter(null);
 			this.adapter = adapter;
+			setOffscreenPageLimit(offscreenPageLimit);
+			
 			super.onAttachedToWindow(); // For prevent slow 'first setCurrentItem'
 			super.setAdapter(adapter);
 			super.setCurrentItem(adapter.getPositionZero());
-			super.setOffscreenPageLimit(adapter.getOffscreenPageLimit());
 			super.clearOnPageChangeListeners();
 			super.addOnPageChangeListener(new OnPageChangeListener()
 			{
@@ -113,7 +115,7 @@ public class DeclarativeViewPager extends ViewPager
 	{
 		if (adapter != null)
 		{
-			adapter.setCenterPositionTo(super.getCurrentItem()); // for rapid position switching, making current position to center position
+			adapter.setPositionZero(super.getCurrentItem()); // for rapid position switching, making current position to center position
 			adapter.notifyDataSetChanged();
 		}
 	}
@@ -177,10 +179,18 @@ public class DeclarativeViewPager extends ViewPager
 	}
 	
 	@Override
-	@Deprecated
-	public void setOffscreenPageLimit(final int limit)
+	public void setOffscreenPageLimit(int limit)
 	{
-		/* empty */
+		if (adapter != null && adapter.isPureCircular())
+		{
+			final int itemCount = adapter.getItemCount();
+			final int maxLimit = itemCount % 2 == 0 ? itemCount / 2 - 1 : itemCount / 2;
+			if (limit > maxLimit)
+			{
+				limit = maxLimit;
+			}
+		}
+		super.setOffscreenPageLimit(limit);
 	}
 	
 	@Override
