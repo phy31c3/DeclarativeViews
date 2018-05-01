@@ -41,7 +41,17 @@ public class DVPActivity extends AppCompatActivity
 					         {
 						         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
 						         v.pnl.setBackgroundColor(color);
-						         v.txv.setOnClickListener(view1 -> dvp.reset());
+						         v.txv.setOnClickListener(view1 ->
+						         {
+							         if (dvp.isSwipedEnabled())
+							         {
+								         dvp.setSwipeDisabled();
+							         }
+							         else
+							         {
+								         dvp.setSwipeEnabled();
+							         }
+						         });
 						         v.txv.setText("Page " + position);
 					         })
 					         .onPageSelected(position ->
@@ -79,6 +89,7 @@ public class DVPActivity extends AppCompatActivity
 					         })
 					         .build();
 				    });
+				    dvp.setSwipeDisabled();
 				    tab.setupWithViewPager(dvp);
 				    next(dvp);
 			    })

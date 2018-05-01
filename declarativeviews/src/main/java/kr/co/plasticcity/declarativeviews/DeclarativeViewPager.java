@@ -4,14 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import kr.co.plasticcity.declarativeviews.function.Consumer;
 
@@ -23,8 +22,8 @@ public class DeclarativeViewPager extends ViewPager
 {
 	@Nullable
 	private DVPAdapter adapter;
-	@NonNull
-	private final AtomicBoolean scrolling;
+	private boolean scrolling;
+	private boolean swipeDisabled;
 	
 	public DeclarativeViewPager(final Context context)
 	{
@@ -34,7 +33,8 @@ public class DeclarativeViewPager extends ViewPager
 	public DeclarativeViewPager(final Context context, final AttributeSet attrs)
 	{
 		super(context, attrs);
-		this.scrolling = new AtomicBoolean(false);
+		this.scrolling = false;
+		this.swipeDisabled = false;
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class DeclarativeViewPager extends ViewPager
 				@Override
 				public void onPageScrollStateChanged(final int state)
 				{
-					scrolling.set(state != SCROLL_STATE_IDLE);
+					scrolling = state != SCROLL_STATE_IDLE;
 				}
 			});
 			post(() ->
@@ -113,14 +113,14 @@ public class DeclarativeViewPager extends ViewPager
 	{
 		if (adapter != null)
 		{
-			adapter.setCenterPositionTo(super.getCurrentItem());
+			adapter.setCenterPositionTo(super.getCurrentItem()); // for rapid position switching, making current position to center position
 			adapter.notifyDataSetChanged();
 		}
 	}
 	
 	public void showNext()
 	{
-		if (!scrolling.get())
+		if (!scrolling)
 		{
 			setCurrentItem(getCurrentItem() + 1);
 		}
@@ -128,10 +128,28 @@ public class DeclarativeViewPager extends ViewPager
 	
 	public void showPrev()
 	{
-		if (!scrolling.get())
+		if (!scrolling)
 		{
 			setCurrentItem(getCurrentItem() - 1);
 		}
+	}
+	
+	@UiThread
+	public boolean isSwipedEnabled()
+	{
+		return !swipeDisabled;
+	}
+	
+	@UiThread
+	public void setSwipeEnabled()
+	{
+		swipeDisabled = false;
+	}
+	
+	@UiThread
+	public void setSwipeDisabled()
+	{
+		swipeDisabled = true;
 	}
 	
 	/**
@@ -250,7 +268,11 @@ public class DeclarativeViewPager extends ViewPager
 	@Override
 	public boolean onInterceptTouchEvent(final MotionEvent ev)
 	{
-		if (adapter != null && adapter.isVertical())
+		if (swipeDisabled)
+		{
+			return false;
+		}
+		else if (adapter != null && adapter.isVertical())
 		{
 			boolean intercepted = super.onInterceptTouchEvent(swapXY(ev));
 			swapXY(ev);
@@ -266,7 +288,11 @@ public class DeclarativeViewPager extends ViewPager
 	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(final MotionEvent ev)
 	{
-		if (adapter != null && adapter.isVertical())
+		if (swipeDisabled)
+		{
+			return false;
+		}
+		else if (adapter != null && adapter.isVertical())
 		{
 			return super.onTouchEvent(swapXY(ev));
 		}
