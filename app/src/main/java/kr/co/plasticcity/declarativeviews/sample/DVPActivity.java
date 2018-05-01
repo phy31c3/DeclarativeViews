@@ -33,27 +33,32 @@ public class DVPActivity extends AppCompatActivity
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
 				    final TabLayout tab = view.findViewById(R.id.tab);
-				    dvp.build(pager ->
+				    new Thread(() ->
 				    {
-					    pager.setItemCount(6)
-					         .setCircular()
-					         .setPageView(R.layout.dvp_page, DvpPageBinding.class)
-					         .onPageCreated((v, position) ->
-					         {
-						         Log.d("DeclarativeViewPager", "1st created: " + position);
-						         
-						         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
-						         v.pnl.setBackgroundColor(color);
-						         v.txv.setOnClickListener(view1 ->
+					    dvp.build(pager ->
+					    {
+						    pager.setItemCount(6)
+						         .setCircular()
+						         .setPageView(R.layout.dvp_page, DvpPageBinding.class)
+						         .onPageCreated((v, position) ->
 						         {
-							         dvp.setOffscreenPageLimit(10);
+							         Log.d("DeclarativeViewPager", "1st created: " + position);
+							
+							         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
+							         v.pnl.setBackgroundColor(color);
+							         v.txv.setOnClickListener(view1 ->
+							         {
+								         dvp.setOffscreenPageLimit(10);
+							         });
+							         v.txv.setText("Page " + position);
+						         })
+						         .buildOnUiThread(() ->
+						         {
+							         dvp.setOffscreenPageLimit(1);
+							         tab.setupWithViewPager(dvp);
 						         });
-						         v.txv.setText("Page " + position);
-					         })
-					         .build();
-				    });
-				    dvp.setOffscreenPageLimit(1);
-				    tab.setupWithViewPager(dvp);
+					    });
+				    }).start();
 			    })
 			    .apply()
 			
@@ -64,7 +69,7 @@ public class DVPActivity extends AppCompatActivity
 				    final TabLayout tab = view.findViewById(R.id.tab);
 				    dvp.build(pager ->
 				    {
-				    	dvp.post(() ->
+					    dvp.post(() ->
 					    {
 						    pager.setItemCount(6)
 						         .setCircular()
@@ -90,7 +95,7 @@ public class DVPActivity extends AppCompatActivity
 				    });
 			    })
 			    .apply()
-
+			
 			    .addGroup("", R.layout.dvp_item_min_height)
 			    .onCreate(view ->
 			    {
@@ -117,7 +122,7 @@ public class DVPActivity extends AppCompatActivity
 				    dvp.setCurrentItem(-1);
 			    })
 			    .apply()
-
+			
 			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6, 7, 8, 9)), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {

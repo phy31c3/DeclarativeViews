@@ -34,7 +34,7 @@ public class DRVActivity extends AppCompatActivity
 				       switch (position)
 				       {
 				       case 0:
-					       buildFirstPage(DRVPage);
+					       binding.dvp.postDelayed(() -> new Thread(() -> buildFirstPage(DRVPage)).start(), 500);
 					       break;
 				       case 1:
 					       buildSecondPage(DRVPage);
@@ -204,47 +204,48 @@ public class DRVActivity extends AppCompatActivity
 			       })
 			       .apply()
 			
-			       .build();
-		});
-		
-		page.binding.btn1.setText("REMOVE");
-		page.binding.btn1.setOnClickListener(v ->
-		{
-			listFront.removeAll(selected);
-			listRear.removeAll(selected);
-			selected.clear();
-			selectedFront.clear();
-			selectedReal.clear();
-		});
-		
-		page.binding.btn2.setText("RETAIN");
-		page.binding.btn2.setOnClickListener(v ->
-		{
-			listFront.retainAll(selected);
-			listRear.retainAll(selected);
-		});
-		
-		page.binding.btn3.setText("MOVE");
-		page.binding.btn3.setOnClickListener(v ->
-		{
-			if (selectedFront.size() == 2)
-			{
-				listFront.move(listFront.indexOf(selectedFront.get(0)), listFront.indexOf(selectedFront.get(1)));
-			}
-			if (selectedReal.size() == 2)
-			{
-				listRear.move(listRear.indexOf(selectedReal.get(0)), listRear.indexOf(selectedReal.get(1)));
-			}
-		});
-		
-		page.binding.btn4.setText("RESET");
-		page.binding.btn4.setOnClickListener(v ->
-		{
-			selected.clear();
-			selectedFront.clear();
-			selectedReal.clear();
-			listFront.replaceRange(0, listFront.size() - 1, (m, position) -> new Model(position + ": front"));
-			listRear.replaceRange(0, listRear.size() - 1, (m, position) -> new Model(position + ": real"));
+			       .buildOnUiThread(() ->
+			       {
+				       page.binding.btn1.setText("REMOVE");
+				       page.binding.btn1.setOnClickListener(v ->
+				       {
+					       listFront.removeAll(selected);
+					       listRear.removeAll(selected);
+					       selected.clear();
+					       selectedFront.clear();
+					       selectedReal.clear();
+				       });
+				
+				       page.binding.btn2.setText("RETAIN");
+				       page.binding.btn2.setOnClickListener(v ->
+				       {
+					       listFront.retainAll(selected);
+					       listRear.retainAll(selected);
+				       });
+				
+				       page.binding.btn3.setText("MOVE");
+				       page.binding.btn3.setOnClickListener(v ->
+				       {
+					       if (selectedFront.size() == 2)
+					       {
+						       listFront.move(listFront.indexOf(selectedFront.get(0)), listFront.indexOf(selectedFront.get(1)));
+					       }
+					       if (selectedReal.size() == 2)
+					       {
+						       listRear.move(listRear.indexOf(selectedReal.get(0)), listRear.indexOf(selectedReal.get(1)));
+					       }
+				       });
+				
+				       page.binding.btn4.setText("RESET");
+				       page.binding.btn4.setOnClickListener(v ->
+				       {
+					       selected.clear();
+					       selectedFront.clear();
+					       selectedReal.clear();
+					       listFront.replaceRange(0, listFront.size() - 1, (m, position) -> new Model(position + ": front"));
+					       listRear.replaceRange(0, listRear.size() - 1, (m, position) -> new Model(position + ": real"));
+				       });
+			       });
 		});
 	}
 	

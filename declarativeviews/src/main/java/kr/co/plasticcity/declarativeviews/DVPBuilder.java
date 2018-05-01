@@ -44,5 +44,9 @@ public interface DVPBuilder
 		Options<V> setVertical();
 		
 		void build();
+		
+		void buildOnUiThread();
+		
+		void buildOnUiThread(@NonNull final Runnable onBuildFinished);
 	}
 }

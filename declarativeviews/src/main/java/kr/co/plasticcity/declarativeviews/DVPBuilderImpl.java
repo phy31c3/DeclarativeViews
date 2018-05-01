@@ -1,6 +1,8 @@
 package kr.co.plasticcity.declarativeviews;
 
 import android.databinding.ViewDataBinding;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -130,6 +132,22 @@ class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 		{
 			final boolean useDataBinding = viewType != null && viewType.getSuperclass() != null && viewType.getSuperclass().equals(ViewDataBinding.class);
 			registrator.accept(new DVPAdapter<>(layoutResId, useDataBinding, itemCount, circular, vertical, viewSupplier, onPageCreated, onPageDestroyed, onPageSelected), offscreenPageLimit);
+		}
+		
+		@Override
+		public void buildOnUiThread()
+		{
+			new Handler(Looper.getMainLooper()).post(this::build);
+		}
+		
+		@Override
+		public void buildOnUiThread(@NonNull final Runnable onBuildFinished)
+		{
+			new Handler(Looper.getMainLooper()).post(() ->
+			{
+				build();
+				onBuildFinished.run();
+			});
 		}
 	}
 }

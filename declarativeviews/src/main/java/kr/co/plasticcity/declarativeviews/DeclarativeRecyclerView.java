@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -41,13 +42,13 @@ public class DeclarativeRecyclerView extends RecyclerView
 		super(context, attrs, defStyle);
 	}
 	
-	@UiThread
+	@AnyThread
 	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder)
 	{
 		build(builder, null);
 	}
 	
-	@UiThread
+	@AnyThread
 	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder, @Nullable final LayoutManager layoutManager)
 	{
 		builder.accept(new DRVBuilderImpl(adapter ->

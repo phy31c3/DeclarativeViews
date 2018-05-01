@@ -2,6 +2,7 @@ package kr.co.plasticcity.declarativeviews;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -39,7 +40,7 @@ public class DeclarativeLinearLayout extends LinearLayout implements DLLView
 		super(context, attrs, defStyle);
 	}
 	
-	@UiThread
+	@AnyThread
 	public void build(@NonNull final Consumer<DLLBuilder.Builder> builder)
 	{
 		builder.accept(new DLLBuilderImpl(this, adapter ->

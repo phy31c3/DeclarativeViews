@@ -2,6 +2,7 @@ package kr.co.plasticcity.declarativeviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.AnyThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -40,7 +41,7 @@ public class DeclarativeViewPager extends ViewPager
 	/**
 	 * Should call this method first
 	 */
-	@UiThread
+	@AnyThread
 	public void build(@NonNull Consumer<DVPBuilder.Builder> builder)
 	{
 		builder.accept(new DVPBuilderImpl((adapter, offscreenPageLimit) ->
