@@ -117,6 +117,7 @@ public class DeclarativeViewPager extends ViewPager
 		if (adapter != null)
 		{
 			adapter.setPositionZero(super.getCurrentItem()); // for rapid position switching, making current position to center position
+			setCurrentItem(0);
 			adapter.notifyDataSetChanged();
 		}
 	}
