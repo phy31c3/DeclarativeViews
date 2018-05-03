@@ -19,7 +19,7 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
 
 class DVPAdapter<V> extends PagerAdapter
 {
-	private static final int MAXCNT = Integer.MAX_VALUE;
+	private static final int MAXCNT = 10000;
 	private int center = MAXCNT / 2;
 	
 	private final int layoutResId;
@@ -96,6 +96,7 @@ class DVPAdapter<V> extends PagerAdapter
 	
 	void onPageSelected(final int in)
 	{
+		// TODO: 2018-05-03 in값이 0 또는 MAX일 경우에 대한 처리 
 		if (onPageSelected != null)
 		{
 			onPageSelected.accept(inToOut(in));
@@ -159,11 +160,6 @@ class DVPAdapter<V> extends PagerAdapter
 		}
 	}
 	
-	void setPositionZero(final int in)
-	{
-		center = in;
-	}
-	
 	int inToOut(final int in)
 	{
 		if (isInfinite())
@@ -190,7 +186,26 @@ class DVPAdapter<V> extends PagerAdapter
 		}
 		else if (circular)
 		{
-			return curIn + out - inToOut(curIn);
+			final int curOut = inToOut(curIn);
+			if (out == curOut)
+			{
+				return curIn;
+			}
+			else
+			{
+				final int opt1 = curIn + out - curOut;
+				final int opt2 = curIn + out + itemCount - curOut;
+				final int margin1 = Math.abs(opt1 - curIn);
+				final int margin2 = Math.abs(opt2 - curIn);
+				if (margin1 != margin2)
+				{
+					return margin1 < margin2 ? opt1 : opt2;
+				}
+				else // margin1 == margin2
+				{
+					return out < curOut ? Math.min(opt1, opt2) : Math.max(opt1, opt2);
+				}
+			}
 		}
 		else
 		{
