@@ -96,7 +96,6 @@ class DVPAdapter<V> extends PagerAdapter
 	
 	void onPageSelected(final int in)
 	{
-		// TODO: 2018-05-03 in값이 0 또는 MAX일 경우에 대한 처리 
 		if (onPageSelected != null)
 		{
 			onPageSelected.accept(inToOut(in));

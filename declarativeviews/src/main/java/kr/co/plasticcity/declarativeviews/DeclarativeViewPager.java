@@ -77,7 +77,7 @@ public class DeclarativeViewPager extends ViewPager
 				super.requestLayout(); // For ViewPager's height is wrap_content
 				if (getCurrentItem() == 0)
 				{
-					adapter.onPageSelected(adapter.getPositionZero()); // To call A for the first visible page
+					adapter.onPageSelected(adapter.getPositionZero()); // Ensure that to call onPageSelected for the first visible page
 				}
 				if (adapter.isVertical())
 				{
@@ -116,7 +116,7 @@ public class DeclarativeViewPager extends ViewPager
 	{
 		if (adapter != null)
 		{
-			setCurrentItem(0);
+			super.setCurrentItem(adapter.getPositionZero(), false);
 			adapter.notifyDataSetChanged();
 		}
 	}
