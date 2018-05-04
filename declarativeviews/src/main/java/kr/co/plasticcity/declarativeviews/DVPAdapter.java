@@ -19,7 +19,9 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
 
 class DVPAdapter<V> extends PagerAdapter
 {
-	private static final int MAXCNT = 10000;
+	private static final int MAXCNT = 19999;
+	private static final int INFINITY_MAX = (MAXCNT - 1) - MAXCNT / 2;
+	private static final int INFINITY_MIN = -INFINITY_MAX - 1;
 	private int center = MAXCNT / 2;
 	
 	private final int layoutResId;
@@ -163,7 +165,19 @@ class DVPAdapter<V> extends PagerAdapter
 	{
 		if (isInfinite())
 		{
-			return in - center;
+			final int out = in - center;
+			if (out < INFINITY_MIN)
+			{
+				return INFINITY_MIN;
+			}
+			else if (out > INFINITY_MAX)
+			{
+				return INFINITY_MAX;
+			}
+			else
+			{
+				return out;
+			}
 		}
 		else if (circular)
 		{
@@ -177,14 +191,33 @@ class DVPAdapter<V> extends PagerAdapter
 		}
 	}
 	
-	int outToIn(final int out, final int curIn)
+	int outToIn(int out, final int curIn)
 	{
 		if (isInfinite())
 		{
-			return out + center;
+			if (out < INFINITY_MIN)
+			{
+				out = INFINITY_MIN;
+			}
+			else if (out > INFINITY_MAX)
+			{
+				out = INFINITY_MAX;
+			}
+			
+			int in = out + center;
+			if (in < 0)
+			{
+				in = 0;
+			}
+			else if (in >= MAXCNT)
+			{
+				in = MAXCNT - 1;
+			}
+			return in;
 		}
 		else if (circular)
 		{
+			out = (out % itemCount + itemCount) % itemCount;
 			final int curOut = inToOut(curIn);
 			if (out == curOut)
 			{
@@ -193,17 +226,28 @@ class DVPAdapter<V> extends PagerAdapter
 			else
 			{
 				final int opt1 = curIn + out - curOut;
-				final int opt2 = curIn + out + itemCount - curOut;
+				final int opt2 = curIn + out - curOut + (out < curOut ? itemCount : -itemCount);
 				final int margin1 = Math.abs(opt1 - curIn);
 				final int margin2 = Math.abs(opt2 - curIn);
+				int in;
 				if (margin1 != margin2)
 				{
-					return margin1 < margin2 ? opt1 : opt2;
+					in = margin1 < margin2 ? opt1 : opt2;
 				}
 				else // margin1 == margin2
 				{
-					return out < curOut ? Math.min(opt1, opt2) : Math.max(opt1, opt2);
+					in = out < curOut ? Math.min(opt1, opt2) : Math.max(opt1, opt2);
 				}
+				
+				if (in < 0)
+				{
+					in = 0;
+				}
+				else if (in >= MAXCNT)
+				{
+					in = MAXCNT - 1;
+				}
+				return in;
 			}
 		}
 		else

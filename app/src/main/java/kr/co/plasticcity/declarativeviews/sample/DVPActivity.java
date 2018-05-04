@@ -119,7 +119,7 @@ public class DVPActivity extends AppCompatActivity
 						         })
 						         .onPageSelected(position ->
 						         {
-							         Log.d("DeclarativeViewPager", "2nd: " + position);
+							         Log.d("DeclarativeViewPager", "3rd: " + position);
 						         })
 						         .build();
 						    dvp.setSwipeDisabled();
@@ -136,7 +136,7 @@ public class DVPActivity extends AppCompatActivity
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
 				    dvp.build(pager ->
 				    {
-					    pager.setInfiniteMode(3)
+					    pager.setInfiniteMode(1)
 					         .setPageView(R.layout.dvp_page, View.class)
 					         .onPageCreated((v, position) ->
 					         {
@@ -149,7 +149,7 @@ public class DVPActivity extends AppCompatActivity
 					         })
 					         .onPageSelected(position ->
 					         {
-						         Log.d("DeclarativeViewPager", "3rd: " + position);
+						         Log.d("DeclarativeViewPager", "4th: " + position);
 					         })
 					         .build();
 				    });
@@ -157,7 +157,7 @@ public class DVPActivity extends AppCompatActivity
 			    })
 			    .apply()
 			
-			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6, 7, 8, 9)), R.layout.dvp_item)
+			    .addGroup(ListModel.of(Arrays.asList(5, 6, 7, 8, 9)), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
