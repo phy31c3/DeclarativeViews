@@ -42,15 +42,14 @@ public class DVPActivity extends AppCompatActivity
 						         .setPageView(R.layout.dvp_page, DvpPageBinding.class)
 						         .onPageCreated((v, position) ->
 						         {
-							         Log.d("DeclarativeViewPager", "1st created: " + position);
-							
 							         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
 							         v.pnl.setBackgroundColor(color);
-							         v.txv.setOnClickListener(view1 ->
-							         {
-								         dvp.setOffscreenPageLimit(10);
-							         });
+							         v.txv.setOnClickListener(view1 -> dvp.reset());
 							         v.txv.setText("Page " + position);
+						         })
+						         .onPageSelected(position ->
+						         {
+							         Log.d("DeclarativeViewPager", "1st: " + position);
 						         })
 						         .buildOnUiThread(() ->
 						         {

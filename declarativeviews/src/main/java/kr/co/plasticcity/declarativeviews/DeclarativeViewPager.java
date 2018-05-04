@@ -54,16 +54,26 @@ public class DeclarativeViewPager extends ViewPager
 			super.clearOnPageChangeListeners();
 			super.addOnPageChangeListener(new OnPageChangeListener()
 			{
+				private int pastOut = getCurrentItem();
+				
 				@Override
 				public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels)
 				{
-					/* empty */
+					if (positionOffsetPixels == 0 && adapter.isPureCircularLimit(position))
+					{
+						post(() -> DeclarativeViewPager.super.setCurrentItem(adapter.outToIn(adapter.inToOut(position), adapter.getPositionZero()), false));
+					}
 				}
 				
 				@Override
 				public void onPageSelected(final int position)
 				{
-					adapter.onPageSelected(position);
+					final int curOut = getCurrentItem();
+					if (pastOut != curOut)
+					{
+						pastOut = curOut;
+						adapter.onPageSelected(position);
+					}
 				}
 				
 				@Override
@@ -229,6 +239,8 @@ public class DeclarativeViewPager extends ViewPager
 	{
 		super.addOnPageChangeListener(new OnPageChangeListener()
 		{
+			private int pastOut = getCurrentItem();
+			
 			@Override
 			public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels)
 			{
@@ -243,7 +255,12 @@ public class DeclarativeViewPager extends ViewPager
 			{
 				if (adapter != null)
 				{
-					listener.onPageSelected(adapter.inToOut(position));
+					final int curOut = getCurrentItem();
+					if (pastOut != curOut)
+					{
+						pastOut = curOut;
+						listener.onPageSelected(adapter.inToOut(position));
+					}
 				}
 			}
 			

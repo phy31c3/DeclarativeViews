@@ -139,6 +139,11 @@ class DVPAdapter<V> extends PagerAdapter
 		return circular && !isInfinite();
 	}
 	
+	boolean isPureCircularLimit(final int in)
+	{
+		return isPureCircular() && (in == 0 || in == MAXCNT - 1);
+	}
+	
 	boolean isVertical()
 	{
 		return vertical;
