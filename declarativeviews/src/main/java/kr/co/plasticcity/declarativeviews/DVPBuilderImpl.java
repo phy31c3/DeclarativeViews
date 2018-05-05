@@ -15,13 +15,14 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
  * Created by JongsunYu on 2017-01-05.
  */
 
-class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
+class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular, DVPBuilder.SetRecycle
 {
 	@NonNull
 	private final BiConsumer<DVPAdapter, Integer> registrator;
 	private int itemCount;
 	private int offscreenPageLimit;
 	private boolean circular;
+	private boolean recycle;
 	
 	DVPBuilderImpl(@NonNull final BiConsumer<DVPAdapter, Integer> registrator)
 	{
@@ -37,7 +38,7 @@ class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 	}
 	
 	@Override
-	public SetPageView setInfiniteMode(final int offscreenPageLimit)
+	public SetRecycle setInfiniteMode(final int offscreenPageLimit)
 	{
 		this.itemCount = 0;
 		this.offscreenPageLimit = offscreenPageLimit;
@@ -46,9 +47,16 @@ class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 	}
 	
 	@Override
-	public SetPageView setCircular()
+	public SetRecycle setCircular()
 	{
 		this.circular = true;
+		return this;
+	}
+	
+	@Override
+	public SetPageView setRecycle()
+	{
+		this.recycle = true;
 		return this;
 	}
 	
@@ -131,7 +139,7 @@ class DVPBuilderImpl implements DVPBuilder.Builder, DVPBuilder.SetCircular
 		public void build()
 		{
 			final boolean useDataBinding = viewType != null && viewType.getSuperclass() != null && viewType.getSuperclass().equals(ViewDataBinding.class);
-			registrator.accept(new DVPAdapter<>(layoutResId, useDataBinding, itemCount, circular, vertical, viewSupplier, onPageCreated, onPageDestroyed, onPageSelected), offscreenPageLimit);
+			registrator.accept(new DVPAdapter<>(layoutResId, useDataBinding, itemCount, circular, vertical, recycle, viewSupplier, onPageCreated, onPageDestroyed, onPageSelected), offscreenPageLimit);
 		}
 		
 		@Override
