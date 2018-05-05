@@ -42,15 +42,14 @@ public class DVPActivity extends AppCompatActivity
 						         .setPageView(R.layout.dvp_page, DvpPageBinding.class)
 						         .onPageCreated((v, position) ->
 						         {
-							         Log.d("DeclarativeViewPager", "1st created: " + position);
-							
 							         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
 							         v.pnl.setBackgroundColor(color);
-							         v.txv.setOnClickListener(view1 ->
-							         {
-								         dvp.setOffscreenPageLimit(10);
-							         });
+							         v.txv.setOnClickListener(view1 -> dvp.reset());
 							         v.txv.setText("Page " + position);
+						         })
+						         .onPageSelected(position ->
+						         {
+							         Log.d("DeclarativeViewPager", "1st: " + position);
 						         })
 						         .buildOnUiThread(() ->
 						         {
@@ -59,6 +58,40 @@ public class DVPActivity extends AppCompatActivity
 						         });
 					    });
 				    }).start();
+			    })
+			    .apply()
+			
+			    .addGroup("", R.layout.dvp_item)
+			    .onCreate(view ->
+			    {
+				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
+				    final TabLayout tab = view.findViewById(R.id.tab);
+				    dvp.build(pager ->
+				    {
+					    dvp.post(() ->
+					    {
+						    pager.setItemCount(5)
+						         .setCircular()
+						         .setPageView(R.layout.dvp_page)
+						         .onPageCreated((v, position) ->
+						         {
+							         final View pnl = v.findViewById(R.id.pnl);
+							         final TextView txv = v.findViewById(R.id.txv);
+							         int color = 0xFF777777 | (0x000000BB << (position % 3 * 8));
+							         pnl.setBackgroundColor(color);
+							         txv.setOnClickListener(view1 -> dvp.reset());
+							         txv.setText("Page " + position);
+						         })
+						         .onPageSelected(position ->
+						         {
+							         Log.d("DeclarativeViewPager", "2nd: " + position);
+						         })
+						         .build();
+						    dvp.setSwipeDisabled();
+						    tab.setupWithViewPager(dvp);
+						    next(dvp);
+					    });
+				    });
 			    })
 			    .apply()
 			
@@ -85,12 +118,12 @@ public class DVPActivity extends AppCompatActivity
 						         })
 						         .onPageSelected(position ->
 						         {
-							         Log.d("DeclarativeViewPager", "2nd: " + position);
+							         Log.d("DeclarativeViewPager", "3rd: " + position);
 						         })
 						         .build();
 						    dvp.setSwipeDisabled();
 						    tab.setupWithViewPager(dvp);
-						    next(dvp);
+						    prev(dvp);
 					    });
 				    });
 			    })
@@ -102,7 +135,7 @@ public class DVPActivity extends AppCompatActivity
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
 				    dvp.build(pager ->
 				    {
-					    pager.setInfiniteMode(3)
+					    pager.setInfiniteMode(1)
 					         .setPageView(R.layout.dvp_page, View.class)
 					         .onPageCreated((v, position) ->
 					         {
@@ -115,7 +148,7 @@ public class DVPActivity extends AppCompatActivity
 					         })
 					         .onPageSelected(position ->
 					         {
-						         Log.d("DeclarativeViewPager", "3rd: " + position);
+						         Log.d("DeclarativeViewPager", "4th: " + position);
 					         })
 					         .build();
 				    });
@@ -123,7 +156,7 @@ public class DVPActivity extends AppCompatActivity
 			    })
 			    .apply()
 			
-			    .addGroup(ListModel.of(Arrays.asList(4, 5, 6, 7, 8, 9)), R.layout.dvp_item)
+			    .addGroup(ListModel.of(Arrays.asList(5, 6, 7, 8, 9)), R.layout.dvp_item)
 			    .onCreate(view ->
 			    {
 				    final DeclarativeViewPager dvp = view.findViewById(R.id.dvp);
@@ -167,6 +200,15 @@ public class DVPActivity extends AppCompatActivity
 		{
 			dvp.showNext();
 			next(dvp);
+		}, 1500);
+	}
+	
+	private void prev(final DeclarativeViewPager dvp)
+	{
+		dvp.postDelayed(() ->
+		{
+			dvp.showPrev();
+			prev(dvp);
 		}, 1500);
 	}
 }
