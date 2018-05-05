@@ -17,11 +17,16 @@ public interface DVPBuilder
 	
 	SetCircular setItemCount(final int itemCount);
 	
-	SetPageView setInfiniteMode(final int offscreenPageLimit);
+	SetRecycle setInfiniteMode(final int offscreenPageLimit);
 	
 	interface SetCircular extends SetPageView
 	{
-		SetPageView setCircular();
+		SetRecycle setCircular();
+	}
+	
+	interface SetRecycle extends SetPageView
+	{
+		SetPageView setRecycle();
 	}
 	
 	interface SetPageView
