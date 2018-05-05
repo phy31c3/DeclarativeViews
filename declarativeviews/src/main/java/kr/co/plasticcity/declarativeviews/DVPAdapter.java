@@ -3,11 +3,15 @@ package kr.co.plasticcity.declarativeviews;
 import android.annotation.SuppressLint;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 import kr.co.plasticcity.declarativeviews.function.BiConsumer;
 import kr.co.plasticcity.declarativeviews.function.Consumer;
@@ -19,6 +23,8 @@ import kr.co.plasticcity.declarativeviews.function.Supplier;
 
 class DVPAdapter<V> extends PagerAdapter
 {
+	private static final int KEY_V = 0xFA9710D3;
+	
 	private static final int MAXCNT = 19999;
 	private static final int INFINITY_MAX = (MAXCNT - 1) - MAXCNT / 2;
 	private static final int INFINITY_MIN = -INFINITY_MAX - 1;
@@ -29,6 +35,7 @@ class DVPAdapter<V> extends PagerAdapter
 	private final int itemCount;
 	private final boolean circular;
 	private final boolean vertical;
+	private final boolean recycle;
 	@Nullable
 	private final Supplier<V> viewSupplier;
 	@Nullable
@@ -38,8 +45,11 @@ class DVPAdapter<V> extends PagerAdapter
 	@Nullable
 	private final Consumer<Integer> onPageSelected;
 	
+	@NonNull
+	private final Queue<View> viewPool;
+	
 	@SuppressLint("UseSparseArrays")
-	DVPAdapter(final int layoutResId, final boolean useDataBinding, final int itemCount, final boolean circular, final boolean vertical,
+	DVPAdapter(final int layoutResId, final boolean useDataBinding, final int itemCount, final boolean circular, final boolean vertical, final boolean recycle,
 	           @Nullable final Supplier<V> viewSupplier,
 	           @Nullable final BiConsumer<V, Integer> onPageCreated,
 	           @Nullable final Consumer<Integer> onPageDestroyed,
@@ -50,10 +60,13 @@ class DVPAdapter<V> extends PagerAdapter
 		this.itemCount = itemCount;
 		this.circular = circular;
 		this.vertical = vertical;
+		this.recycle = recycle;
 		this.viewSupplier = viewSupplier;
 		this.onPageCreated = onPageCreated;
 		this.onPageDestroyed = onPageDestroyed;
 		this.onPageSelected = onPageSelected;
+		
+		this.viewPool = new LinkedList<>();
 	}
 	
 	@Override
@@ -62,20 +75,29 @@ class DVPAdapter<V> extends PagerAdapter
 	{
 		final V v;
 		final View view;
-		if (viewSupplier != null)
+		if (!recycle || viewPool.isEmpty())
 		{
-			v = viewSupplier.get();
-			view = (View)v;
-		}
-		else if (useDataBinding)
-		{
-			v = (V)DataBindingUtil.inflate(LayoutInflater.from(container.getContext()), layoutResId, container, false);
-			view = ((ViewDataBinding)v).getRoot();
+			if (viewSupplier != null)
+			{
+				v = viewSupplier.get();
+				view = (View)v;
+			}
+			else if (useDataBinding)
+			{
+				v = (V)DataBindingUtil.inflate(LayoutInflater.from(container.getContext()), layoutResId, container, false);
+				view = ((ViewDataBinding)v).getRoot();
+			}
+			else
+			{
+				v = (V)LayoutInflater.from(container.getContext()).inflate(layoutResId, container, false);
+				view = (View)v;
+			}
+			view.setTag(KEY_V, v);
 		}
 		else
 		{
-			v = (V)LayoutInflater.from(container.getContext()).inflate(layoutResId, container, false);
-			view = (View)v;
+			view = viewPool.poll();
+			v = (V)view.getTag(KEY_V);
 		}
 		
 		container.addView(view);
@@ -83,13 +105,19 @@ class DVPAdapter<V> extends PagerAdapter
 		{
 			onPageCreated.accept(v, inToOut(position));
 		}
+		
 		return view;
 	}
 	
 	@Override
 	public void destroyItem(final ViewGroup container, final int position, final Object object)
 	{
-		container.removeView((View)object);
+		final View view = (View)object;
+		container.removeView(view);
+		if (recycle)
+		{
+			viewPool.offer(view);
+		}
 		if (onPageDestroyed != null)
 		{
 			onPageDestroyed.accept(inToOut(position));
