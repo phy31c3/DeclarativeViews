@@ -1,6 +1,7 @@
 package kr.co.plasticcity.declarativeviews;
 
 import android.annotation.SuppressLint;
+import android.database.DataSetObserver;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
@@ -304,7 +305,19 @@ class DVPAdapter<V> extends PagerAdapter
 			@Override
 			public boolean isViewFromObject(final View view, final Object object)
 			{
-				return false;
+				return view == object;
+			}
+			
+			@Override
+			public void registerDataSetObserver(final DataSetObserver observer)
+			{
+				DVPAdapter.this.registerDataSetObserver(observer);
+			}
+			
+			@Override
+			public void unregisterDataSetObserver(final DataSetObserver observer)
+			{
+				DVPAdapter.this.unregisterDataSetObserver(observer);
 			}
 		};
 	}
