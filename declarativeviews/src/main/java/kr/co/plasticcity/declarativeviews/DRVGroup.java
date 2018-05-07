@@ -4,7 +4,9 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -79,20 +81,34 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	
 	@NonNull
 	@SuppressWarnings("unchecked")
-	V createView(@NonNull final ViewGroup parent)
+	Pair<View, V> createView(@NonNull final ViewGroup parent)
 	{
 		final V v;
+		final View view;
 		if (viewSupplier != null)
 		{
 			v = viewSupplier.get();
-		}
-		else if (viewType != null && viewType.getSuperclass() != null && viewType.getSuperclass().equals(ViewDataBinding.class))
-		{
-			v = (V)DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
+			if (v.getClass().getSuperclass() != null && v.getClass().getSuperclass().equals(ViewDataBinding.class))
+			{
+				view = ((ViewDataBinding)v).getRoot();
+			}
+			else
+			{
+				view = (View)v;
+			}
 		}
 		else
 		{
-			v = (V)LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent, false);
+			if (viewType != null && viewType.getSuperclass() != null && viewType.getSuperclass().equals(ViewDataBinding.class))
+			{
+				v = (V)DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), layoutResId, parent, false);
+				view = ((ViewDataBinding)v).getRoot();
+			}
+			else
+			{
+				v = (V)LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent, false);
+				view = (View)v;
+			}
 		}
 		
 		if (onCreate != null)
@@ -100,24 +116,21 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 			onCreate.accept(v);
 		}
 		
-		return v;
+		return new Pair<>(view, v);
 	}
 	
-	/**
-	 * @return if the onFirstBind exists, return true. Else return false.
-	 */
-	boolean onFirstBind(@NonNull final V v, final int pos)
+	boolean hasOnFirstBind()
+	{
+		return onFirstBind != null;
+	}
+	
+	void onFirstBind(@NonNull final V v, final int pos)
 	{
 		final int local = pos - this.position;
 		final M m = model.get(local);
 		if (m != null && onFirstBind != null)
 		{
 			onFirstBind.accept(v, m, new ItemPosition(local, pos));
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 	

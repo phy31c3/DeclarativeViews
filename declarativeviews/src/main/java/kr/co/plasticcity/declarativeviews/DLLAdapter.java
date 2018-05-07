@@ -1,7 +1,7 @@
 package kr.co.plasticcity.declarativeviews;
 
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -145,16 +145,9 @@ class DLLAdapter implements DRVNotifier
 	private View createView(final int position)
 	{
 		final DRVGroup group = getGroupAt(position);
-		final Object v = group.createView(view.viewGroup());
-		final View itemView;
-		if (v instanceof ViewDataBinding)
-		{
-			itemView = ((ViewDataBinding)v).getRoot();
-		}
-		else
-		{
-			itemView = (View)v;
-		}
+		final Pair<View, ?> pair = group.createView(view.viewGroup());
+		final View itemView = pair.first;
+		final Object v = pair.second;
 		itemView.setTag(KEY_V, v);
 		group.onFirstBind(v, position); // onCreate
 		group.onBind(v, position); // onBind
