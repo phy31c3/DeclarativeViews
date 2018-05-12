@@ -8,5 +8,5 @@ import android.support.annotation.NonNull;
 
 public interface IdComparable<T>
 {
-	boolean equalId(@NonNull final T t);
+	boolean hasSameId(@NonNull final T t);
 }
