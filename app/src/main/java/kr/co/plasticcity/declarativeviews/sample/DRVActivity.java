@@ -355,8 +355,14 @@ public class DRVActivity extends AppCompatActivity
 		{
 			listModel.add(new Model("0"));
 		});
-		page.binding.btn2.setText("REMOVE");
+		page.binding.btn2.setText("ADDx2");
 		page.binding.btn2.setOnClickListener(v ->
+		{
+			listModel.add(new Model("0"));
+			listModel.add(new Model("0"));
+		});
+		page.binding.btn3.setText("REMOVE");
+		page.binding.btn3.setOnClickListener(v ->
 		{
 			if (!listModel.isEmpty())
 			{
