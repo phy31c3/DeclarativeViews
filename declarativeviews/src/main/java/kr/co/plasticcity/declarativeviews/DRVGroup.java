@@ -31,9 +31,13 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	private final Class<V> viewType;
 	private final int layoutResId;
 	
+	@Nullable
 	private Consumer<V> onCreate;
+	@Nullable
 	private TriConsumer<V, M, ItemPosition> onFirstBind;
+	@Nullable
 	private TriConsumer<V, M, ItemPosition> onBind;
+	private boolean isFooter;
 	private int position;
 	
 	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, final int layoutResId, @NonNull final Class<V> viewType)
@@ -69,14 +73,19 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		this.onBind = onBind;
 	}
 	
-	int size()
+	void setFooter()
 	{
-		return model.size();
+		isFooter = true;
 	}
 	
 	void setPosition(int position)
 	{
 		this.position = position;
+	}
+	
+	int size()
+	{
+		return model.size();
 	}
 	
 	@NonNull
@@ -110,6 +119,8 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 				view = (View)v;
 			}
 		}
+		
+		view.setTag(ViewTag.IS_FOOTER, isFooter);
 		
 		if (onCreate != null)
 		{

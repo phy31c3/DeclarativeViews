@@ -8,6 +8,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class DRVActivity extends AppCompatActivity
 		final DrvActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.drv_activity);
 		binding.dvp.build(builder ->
 		{
-			builder.setItemCount(2)
+			builder.setItemCount(3)
 			       .setPageView(R.layout.drv_page, DRVPage.class)
 			       .onPageCreated((DRVPage, position) ->
 			       {
@@ -38,6 +39,9 @@ public class DRVActivity extends AppCompatActivity
 					       break;
 				       case 1:
 					       buildSecondPage(DRVPage);
+					       break;
+				       case 2:
+					       buildThirdPage(DRVPage);
 					       break;
 				       }
 			       })
@@ -305,6 +309,59 @@ public class DRVActivity extends AppCompatActivity
 		page.binding.btn1.setOnClickListener(v ->
 		{
 			listModel.update(createRandomList());
+		});
+	}
+	
+	private void buildThirdPage(@NonNull final DRVPage page)
+	{
+		final ListModel<Model> listModel = ListModel.of(new ArrayList<>(Collections.singletonList(new Model("0"))));
+		final SingleModel<String> footerModel = SingleModel.of("난 마지막?");
+		
+		page.binding.drv.build(builder ->
+		{
+			builder.addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
+			       .onCreate(v ->
+			       {
+				       v.chk.setVisibility(View.VISIBLE);
+			       })
+			       .onBind((v, m, position) ->
+			       {
+				       v.txv.setText(m.value);
+				       v.getRoot().setPadding(0, Integer.parseInt(m.value), 0, 0);
+				       v.btn.setOnClickListener(v1 ->
+				       {
+					       listModel.set(position.inGroup, new Model("100"));
+					       footerModel.performChanged();
+				       });
+			       })
+			       .apply()
+			
+			       .addFooter(footerModel, R.layout.drv_item, DrvItemBinding.class)
+			       .onCreate(v ->
+			       {
+				       v.getRoot().setPadding(0, 50, 0, 0);
+			       })
+			       .onBind((v, m) ->
+			       {
+				       v.txv.setText(m);
+			       })
+			       .apply()
+			
+			       .build();
+		});
+		
+		page.binding.btn1.setText("ADD");
+		page.binding.btn1.setOnClickListener(v ->
+		{
+			listModel.add(new Model("0"));
+		});
+		page.binding.btn2.setText("REMOVE");
+		page.binding.btn2.setOnClickListener(v ->
+		{
+			if (!listModel.isEmpty())
+			{
+				listModel.remove(listModel.size() - 1);
+			}
 		});
 	}
 	

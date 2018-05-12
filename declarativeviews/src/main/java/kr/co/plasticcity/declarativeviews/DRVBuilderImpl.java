@@ -22,14 +22,16 @@ import kr.co.plasticcity.declarativeviews.function.TriConsumer;
 class DRVBuilderImpl implements DRVBuilder.Definable
 {
 	@NonNull
-	private final Consumer<DRVAdapter> applier;
+	private final BiConsumer<DRVAdapter, Boolean> applier;
 	@NonNull
 	private final DRVAdapter adapter;
+	private boolean hasFooter;
 	
-	DRVBuilderImpl(@NonNull final Consumer<DRVAdapter> applier)
+	DRVBuilderImpl(@NonNull final BiConsumer<DRVAdapter, Boolean> applier)
 	{
 		this.applier = applier;
 		this.adapter = new DRVAdapter();
+		this.hasFooter = false;
 	}
 	
 	@Override
@@ -41,13 +43,15 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 	@Override
 	public <M, V> SingleGroupAdder<M, V, Definable> addGroup(@Nullable final M model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType), this);
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType);
+		return new GroupAdderImpl<>(group, this);
 	}
 	
 	@Override
 	public <M, V> SingleGroupAdder<M, V, Definable> addGroup(@Nullable final M model, @NonNull final Supplier<V> supplier)
 	{
-		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, supplier), this);
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, supplier);
+		return new GroupAdderImpl<>(group, this);
 	}
 	
 	@Override
@@ -69,7 +73,8 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		else
 		{
 			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType), this);
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType);
+			return new GroupAdderImpl<>(group, this);
 		}
 	}
 	
@@ -86,7 +91,8 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		else
 		{
 			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier), this);
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier);
+			return new GroupAdderImpl<>(group, this);
 		}
 	}
 	
@@ -112,7 +118,8 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 			{
 				Log.w("DeclarativeRecyclerView", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
-			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, layoutResId, viewType), this);
+			final DRVGroup<M, V> group = new DRVGroup<>(model, adapter, layoutResId, viewType);
+			return new GroupAdderImpl<>(group, this);
 		}
 	}
 	
@@ -132,56 +139,87 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 			{
 				Log.w("DeclarativeRecyclerView", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
-			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, supplier), this);
+			final DRVGroup<M, V> group = new DRVGroup<>(model, adapter, supplier);
+			return new GroupAdderImpl<>(group, this);
 		}
 	}
 	
 	@Override
 	public <M> SingleGroupAdder<M, View, Buildable> addFooter(@NonNull final M model, final int layoutResId)
 	{
-		// TODO: 2018-05-07
-		return null;
+		return addFooter(model, layoutResId, View.class);
 	}
 	
 	@Override
 	public <M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final M model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		// TODO: 2018-05-07
-		return null;
+		hasFooter = true;
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType);
+		group.setFooter();
+		return new GroupAdderImpl<>(group, this);
 	}
 	
 	@Override
 	public <M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final M model, @NonNull final Supplier<V> supplier)
 	{
-		// TODO: 2018-05-07
-		return null;
+		hasFooter = true;
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, supplier);
+		group.setFooter();
+		return new GroupAdderImpl<>(group, this);
 	}
 	
 	@Override
 	public <M> SingleGroupAdder<M, View, Buildable> addFooter(@NonNull final SingleModel<M> model, final int layoutResId)
 	{
-		// TODO: 2018-05-07
-		return null;
+		return addFooter(model, layoutResId, View.class);
 	}
 	
 	@Override
 	public <M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		// TODO: 2018-05-07
-		return null;
+		hasFooter = true;
+		if (model instanceof DRVModel)
+		{
+			final DRVModel<M> m = (DRVModel<M>)model;
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
+			group.setFooter();
+			m.init(group, group);
+			return new GroupAdderImpl<>(group, this);
+		}
+		else
+		{
+			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType);
+			group.setFooter();
+			return new GroupAdderImpl<>(group, this);
+		}
 	}
 	
 	@Override
 	public <M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier)
 	{
-		// TODO: 2018-05-07
-		return null;
+		hasFooter = true;
+		if (model instanceof DRVModel)
+		{
+			final DRVModel<M> m = (DRVModel<M>)model;
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
+			group.setFooter();
+			m.init(group, group);
+			return new GroupAdderImpl<>(group, this);
+		}
+		else
+		{
+			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier);
+			group.setFooter();
+			return new GroupAdderImpl<>(group, this);
+		}
 	}
 	
 	@Override
 	public void build()
 	{
-		applier.accept(adapter);
+		applier.accept(adapter, hasFooter);
 	}
 	
 	@Override

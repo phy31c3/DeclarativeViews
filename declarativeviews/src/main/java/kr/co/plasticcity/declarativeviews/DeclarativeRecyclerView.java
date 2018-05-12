@@ -23,6 +23,8 @@ import kr.co.plasticcity.declarativeviews.function.Consumer;
  */
 public class DeclarativeRecyclerView extends RecyclerView
 {
+	@NonNull
+	private final DRVFooterDecoration footerDecoration;
 	@Nullable
 	private DRVAdapter adapter;
 	
@@ -39,6 +41,7 @@ public class DeclarativeRecyclerView extends RecyclerView
 	public DeclarativeRecyclerView(final Context context, final AttributeSet attrs, final int defStyle)
 	{
 		super(context, attrs, defStyle);
+		this.footerDecoration = new DRVFooterDecoration();
 	}
 	
 	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder)
@@ -48,10 +51,17 @@ public class DeclarativeRecyclerView extends RecyclerView
 	
 	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder, @Nullable final LayoutManager layoutManager)
 	{
-		builder.accept(new DRVBuilderImpl(adapter ->
+		builder.accept(new DRVBuilderImpl((adapter, hasFooter) ->
 		{
 			this.adapter = adapter;
 			super.setAdapter(adapter);
+			
+			removeItemDecoration(footerDecoration);
+			if (hasFooter)
+			{
+				addItemDecoration(footerDecoration);
+			}
+			
 			if (layoutManager != null)
 			{
 				setLayoutManager(layoutManager);
