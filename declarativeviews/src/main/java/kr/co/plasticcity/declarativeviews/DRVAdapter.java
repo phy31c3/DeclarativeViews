@@ -1,8 +1,8 @@
 package kr.co.plasticcity.declarativeviews;
 
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,32 +37,30 @@ class DRVAdapter extends RecyclerView.Adapter<DRVAdapter.ViewHolder> implements 
 	@SuppressWarnings("unchecked")
 	public DRVAdapter.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
 	{
-		final Object v = hashCodes.get(viewType).createView(parent);
-		if (v instanceof ViewDataBinding)
-		{
-			return new ViewHolder(((ViewDataBinding)v).getRoot(), v);
-		}
-		else
-		{
-			return new ViewHolder((View)v, v);
-		}
+		final Pair<View, ?> pair = hashCodes.get(viewType).createView(parent);
+		return new ViewHolder(pair.first, pair.second);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void onBindViewHolder(@NonNull final DRVAdapter.ViewHolder holder, final int position)
 	{
+		final DRVGroup group = getGroupAt(position);
 		if (holder.fresh)
 		{
 			holder.fresh = false;
-			if (!getGroupAt(position).onFirstBind(holder.v, position))
+			if (group.hasOnFirstBind())
 			{
-				getGroupAt(position).onBind(holder.v, position);
+				group.onFirstBind(holder.v, position);
+			}
+			else
+			{
+				group.onBind(holder.v, position);
 			}
 		}
 		else
 		{
-			getGroupAt(position).onBind(holder.v, position);
+			group.onBind(holder.v, position);
 		}
 	}
 	
