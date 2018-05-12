@@ -393,7 +393,7 @@ public class DRVActivity extends AppCompatActivity
 		}
 		
 		@Override
-		public boolean equalId(@NonNull final Model model)
+		public boolean hasSameId(@NonNull final Model model)
 		{
 			return value.equals(model.value);
 		}

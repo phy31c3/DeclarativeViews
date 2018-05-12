@@ -71,7 +71,7 @@ public interface ListModel<M> extends List<M>
 	
 	/**
 	 * For update execution, each model M must be be able to compare 'id equality' as {@link IdComparable}.
-	 * 'id equality' is basically determined by IdComparable's 'equalId()' method, but if model M does not implement IdComparable, 'id equality' is determined by 'equals()' method.
+	 * 'id equality' is basically determined by IdComparable's 'hasSameId()' method, but if model M does not implement IdComparable, 'id equality' is determined by 'equals()' method.
 	 * Also, the original and the list l must follow the same order.<br>
 	 * (ex : origin = [3, 5, 10], l = [0, 2, 5, 6, 9], result = [0, 2, 5, 6, 9])<br>
 	 * Update does not mean union, so the result list is the same size and value as the list l.

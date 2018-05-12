@@ -521,7 +521,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 			final IdComparable<M> comp = (IdComparable)element;
 			for (int i = from ; i < list.size() ; ++i)
 			{
-				if (comp.equalId(list.get(i)))
+				if (comp.hasSameId(list.get(i)))
 				{
 					return i;
 				}
