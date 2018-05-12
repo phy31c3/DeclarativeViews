@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -253,9 +252,9 @@ public class DLLActivity extends AppCompatActivity
 	private void buildSecondPage(@NonNull final DllPageBinding page)
 	{
 		final SingleModel<String> m0 = SingleModel.of("그냥");
-		final ListModel<Object> m1 = ListModel.of(Arrays.asList("", "", ""));
+		final ListModel<Object> m1 = ListModel.of("", "", "");
 		final ListModel<Model> listModel = ListModel.of(createRandomList());
-		final ListModel<Object> m2 = ListModel.of(Arrays.asList("", ""));
+		final ListModel<Object> m2 = ListModel.of("", "");
 		final SingleModel<String> m3 = SingleModel.of("난 마지막?");
 		
 		page.dll.build(builder ->

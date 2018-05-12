@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,6 +37,11 @@ public interface ListModel<M> extends List<M>
 		{
 			return empty();
 		}
+	}
+	
+	static <M> ListModel<M> of(@NonNull final M... l)
+	{
+		return new DRVModel<>(new ArrayList<>(Arrays.asList(l)));
 	}
 	
 	static <M> ListModel<M> empty()
