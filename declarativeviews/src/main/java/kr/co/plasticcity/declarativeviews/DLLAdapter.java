@@ -1,7 +1,7 @@
 package kr.co.plasticcity.declarativeviews;
 
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -14,9 +14,6 @@ import java.util.TreeMap;
 
 class DLLAdapter implements DRVNotifier
 {
-	private static final int KEY_V = 0xFA9710D3;
-	
-	@NonNull
 	private final DLLView view;
 	@NonNull
 	private final List<DRVGroup> groups;
@@ -37,7 +34,7 @@ class DLLAdapter implements DRVNotifier
 	public void notifyChanged(final int position)
 	{
 		view.beginChange();
-		getGroupAt(position).onBind(view.getChild(position).getTag(KEY_V), position);
+		getGroupAt(position).onBind(view.getChild(position).getTag(ViewTag.V), position);
 	}
 	
 	@Override
@@ -61,7 +58,7 @@ class DLLAdapter implements DRVNotifier
 		view.beginChange();
 		for (int i = 0 ; i < count ; ++i)
 		{
-			getGroupAt(start + i).onBind(view.getChild(start + i).getTag(KEY_V), start + i);
+			getGroupAt(start + i).onBind(view.getChild(start + i).getTag(ViewTag.V), start + i);
 		}
 	}
 	
@@ -145,17 +142,10 @@ class DLLAdapter implements DRVNotifier
 	private View createView(final int position)
 	{
 		final DRVGroup group = getGroupAt(position);
-		final Object v = group.createView(view.viewGroup());
-		final View itemView;
-		if (v instanceof ViewDataBinding)
-		{
-			itemView = ((ViewDataBinding)v).getRoot();
-		}
-		else
-		{
-			itemView = (View)v;
-		}
-		itemView.setTag(KEY_V, v);
+		final Pair<View, ?> pair = group.createView(view.viewGroup());
+		final View itemView = pair.first;
+		final Object v = pair.second;
+		itemView.setTag(ViewTag.V, v);
 		group.onFirstBind(v, position); // onCreate
 		group.onBind(v, position); // onBind
 		return itemView;
