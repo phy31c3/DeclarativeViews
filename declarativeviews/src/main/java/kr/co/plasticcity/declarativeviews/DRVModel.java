@@ -189,7 +189,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 				{
 					if (mark > pin)
 					{
-						list.removeAll(list.subList(pin, mark));
+						list.removeAll(new ArrayList<>(list.subList(pin, mark)));
 						notifier.notifyRangeRemoved(pin, mark - pin);
 					}
 					if (add.size() > 0)
@@ -213,7 +213,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 			if (pin < list.size())
 			{
 				final int count = list.size() - pin;
-				list.removeAll(list.subList(pin, list.size()));
+				list.removeAll(new ArrayList<>(list.subList(pin, list.size())));
 				notifier.notifyRangeRemoved(pin, count);
 			}
 			if (add.size() > 0)
