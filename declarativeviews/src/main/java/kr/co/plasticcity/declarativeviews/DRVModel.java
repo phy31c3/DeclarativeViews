@@ -75,11 +75,11 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	{
 		if (!list.isEmpty())
 		{
-			final M old = list.get(0);
-			if (old != null)
+			final M oldM = list.get(0);
+			if (oldM != null)
 			{
-				final M neW = f.apply(old);
-				if (!neW.equals(list.set(0, neW)))
+				final M newM = f.apply(oldM);
+				if (!newM.equals(list.set(0, newM)))
 				{
 					notifier.notifyChanged(0);
 				}
@@ -118,11 +118,11 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	{
 		if (index >= 0 && index < list.size())
 		{
-			final M old = list.get(index);
-			if (old != null)
+			final M oldM = list.get(index);
+			if (oldM != null)
 			{
-				final M neW = f.apply(old);
-				if (!neW.equals(list.set(index, neW)))
+				final M newM = f.apply(oldM);
+				if (!newM.equals(list.set(index, newM)))
 				{
 					notifier.notifyChanged(index);
 				}
@@ -139,11 +139,11 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 			Range range = null;
 			for (int i = start ; i <= end ; ++i)
 			{
-				final M old = list.get(i);
-				if (old != null)
+				final M oldM = list.get(i);
+				if (oldM != null)
 				{
-					final M neW = f.apply(old, i);
-					if (!neW.equals(list.set(i, neW)))
+					final M newM = f.apply(oldM, i);
+					if (!newM.equals(list.set(i, newM)))
 					{
 						if (range != null && range.isNext(i))
 						{
