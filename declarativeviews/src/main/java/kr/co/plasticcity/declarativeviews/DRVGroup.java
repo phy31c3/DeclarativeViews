@@ -19,12 +19,14 @@ import kr.co.plasticcity.declarativeviews.function.TriConsumer;
  * Created by JongsunYu on 2017-01-03.
  */
 
-class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
+class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 {
 	@NonNull
 	private final List<M> model;
 	@NonNull
 	private final DRVNotifier notifier;
+	@NonNull
+	private final Supplier<Integer> listSize;
 	@Nullable
 	private final Supplier<V> viewSupplier;
 	@Nullable
@@ -37,22 +39,26 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	private TriConsumer<V, M, ItemPosition> onFirstBind;
 	@Nullable
 	private TriConsumer<V, M, ItemPosition> onBind;
+	@Nullable
+	private DRVDivider.Creator dividerCreator;
 	private boolean isFooter;
 	private int position;
 	
-	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, final int layoutResId, @NonNull final Class<V> viewType)
+	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<Integer> listSize, final int layoutResId, @NonNull final Class<V> viewType)
 	{
 		this.model = model;
 		this.notifier = notifier;
+		this.listSize = listSize;
 		this.viewSupplier = null;
 		this.viewType = viewType;
 		this.layoutResId = layoutResId;
 	}
 	
-	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<V> supplier)
+	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<Integer> listSize, @NonNull final Supplier<V> supplier)
 	{
 		this.model = model;
 		this.notifier = notifier;
+		this.listSize = listSize;
 		this.viewSupplier = supplier;
 		this.viewType = null;
 		this.layoutResId = 0;
@@ -73,6 +79,11 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		this.onBind = onBind;
 	}
 	
+	void setDividerCreator(@NonNull final DRVDivider.Creator dividerCreator)
+	{
+		this.dividerCreator = dividerCreator;
+	}
+	
 	void setFooter()
 	{
 		isFooter = true;
@@ -86,6 +97,11 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	int size()
 	{
 		return model.size();
+	}
+	
+	int getPositionInList(final int positionInGroup)
+	{
+		return this.position + positionInGroup;
 	}
 	
 	@NonNull
@@ -120,6 +136,10 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 			}
 		}
 		
+		if (dividerCreator != null)
+		{
+			view.setTag(ViewTag.DIVIDER, dividerCreator.create(view.getContext()));
+		}
 		view.setTag(ViewTag.IS_FOOTER, isFooter);
 		
 		if (onCreate != null)
@@ -135,23 +155,29 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 		return onFirstBind != null;
 	}
 	
-	void onFirstBind(@NonNull final V v, final int pos)
+	void onFirstBind(@NonNull final V v, @NonNull final View view, final int pos)
 	{
-		final int local = pos - this.position;
-		final M m = model.get(local);
-		if (m != null && onFirstBind != null)
-		{
-			onFirstBind.accept(v, m, new ItemPosition(local, pos));
-		}
+		performBind(onFirstBind, v, view, pos);
 	}
 	
-	void onBind(@NonNull final V v, final int pos)
+	void onBind(@NonNull final V v, @NonNull final View view, final int pos)
+	{
+		performBind(onBind, v, view, pos);
+	}
+	
+	private void performBind(@Nullable final TriConsumer<V, M, ItemPosition> bindFunc, @NonNull final V v, @NonNull final View view, final int pos)
 	{
 		final int local = pos - this.position;
 		final M m = model.get(local);
-		if (m != null && onBind != null)
+		final ItemPosition itemPosition = new ItemPosition(local, pos, model::size, listSize);
+		final DRVDivider divider = (DRVDivider)view.getTag(ViewTag.DIVIDER);
+		if (divider != null)
 		{
-			onBind.accept(v, m, new ItemPosition(local, pos));
+			divider.setItemPosition(itemPosition);
+		}
+		if (m != null && bindFunc != null)
+		{
+			bindFunc.accept(v, m, itemPosition);
 		}
 	}
 	
@@ -165,12 +191,20 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	public void notifyInserted(final int position)
 	{
 		notifier.notifyInserted(this.position + position);
+		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == model.size() - 1 && position > 0)
+		{
+			notifier.notifyChanged(this.position + position - 1);
+		}
 	}
 	
 	@Override
 	public void notifyRemoved(final int position)
 	{
 		notifier.notifyRemoved(this.position + position);
+		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == model.size() && position > 0)
+		{
+			notifier.notifyChanged(this.position + position - 1);
+		}
 	}
 	
 	@Override
@@ -195,12 +229,6 @@ class DRVGroup<M, V> implements DRVNotifier, DRVCalculator, Comparable<DRVGroup>
 	public void notifyMoved(final int from, final int to)
 	{
 		notifier.notifyMoved(position + from, position + to);
-	}
-	
-	@Override
-	public int getPositionInList(final int positionInGroup)
-	{
-		return this.position + positionInGroup;
 	}
 	
 	@Override

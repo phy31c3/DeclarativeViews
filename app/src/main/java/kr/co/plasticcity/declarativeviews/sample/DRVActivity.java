@@ -59,7 +59,6 @@ public class DRVActivity extends AppCompatActivity
 		final ListModel<Model> listModel = ListModel.of(new Model("0"));
 		final SingleModel<String> footerModel = SingleModel.of("");
 		
-		page.binding.drv.addItemDecoration(new Divider(this, 5));
 		page.binding.drv.build(builder ->
 		{
 			builder.addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
@@ -77,6 +76,7 @@ public class DRVActivity extends AppCompatActivity
 					       footerModel.performChanged();
 				       });
 			       })
+			       .setDivider(3, R.color.medium, false)
 			       .apply()
 			
 			       .addFooter(footerModel, R.layout.drv_item_footer, DrvItemFooterBinding.class)

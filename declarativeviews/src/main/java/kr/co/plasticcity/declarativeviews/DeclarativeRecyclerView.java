@@ -24,7 +24,7 @@ import kr.co.plasticcity.declarativeviews.function.Consumer;
 public class DeclarativeRecyclerView extends RecyclerView
 {
 	@NonNull
-	private final DRVFooterDecoration footerDecoration;
+	private final DRVItemDecoration itemDecoration;
 	@Nullable
 	private DRVAdapter adapter;
 	
@@ -41,7 +41,8 @@ public class DeclarativeRecyclerView extends RecyclerView
 	public DeclarativeRecyclerView(final Context context, final AttributeSet attrs, final int defStyle)
 	{
 		super(context, attrs, defStyle);
-		this.footerDecoration = new DRVFooterDecoration();
+		this.itemDecoration = new DRVItemDecoration();
+		super.addItemDecoration(itemDecoration, -1);
 	}
 	
 	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder)
@@ -51,16 +52,10 @@ public class DeclarativeRecyclerView extends RecyclerView
 	
 	public void build(@NonNull final Consumer<DRVBuilder.Builder> builder, @Nullable final LayoutManager layoutManager)
 	{
-		builder.accept(new DRVBuilderImpl((adapter, hasFooter) ->
+		builder.accept(new DRVBuilderImpl(adapter ->
 		{
 			this.adapter = adapter;
 			super.setAdapter(adapter);
-			
-			removeItemDecoration(footerDecoration);
-			if (hasFooter)
-			{
-				addItemDecoration(footerDecoration);
-			}
 			
 			if (layoutManager != null)
 			{
@@ -158,5 +153,49 @@ public class DeclarativeRecyclerView extends RecyclerView
 			c.translate(0, -backgroundY);
 		}
 		super.onDraw(c);
+	}
+	
+	/* ############################################################
+	 * For footer & divider
+	 * ############################################################ */
+	
+	/**
+	 * Use 'setItemDecoration' at builder, instead of this.
+	 */
+	@Override
+	@Deprecated
+	public void addItemDecoration(final ItemDecoration decor)
+	{
+		/* empty */
+	}
+	
+	/**
+	 * Use 'setItemDecoration' at builder, instead of this.
+	 */
+	@Override
+	@Deprecated
+	public void addItemDecoration(final ItemDecoration decor, final int index)
+	{
+		/* empty */
+	}
+	
+	/**
+	 * We recommend that you do not use it.
+	 */
+	@Override
+	@Deprecated
+	public void removeItemDecoration(final ItemDecoration decor)
+	{
+		/* empty */
+	}
+	
+	/**
+	 * We recommend that you do not use it.
+	 */
+	@Override
+	@Deprecated
+	public ItemDecoration getItemDecorationAt(final int index)
+	{
+		return itemDecoration;
 	}
 }

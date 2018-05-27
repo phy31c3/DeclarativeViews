@@ -1,5 +1,6 @@
 package kr.co.plasticcity.declarativeviews;
 
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -55,6 +56,8 @@ public interface DRVBuilder
 		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
 		
 		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		
+		GroupAdder<M, V> setDivider(final int heightDp, @ColorRes final int colorRes, final boolean includeLast);
 		
 		Definable apply();
 	}

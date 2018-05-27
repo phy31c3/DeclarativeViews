@@ -34,7 +34,8 @@ class DLLAdapter implements DRVNotifier
 	public void notifyChanged(final int position)
 	{
 		view.beginChange();
-		getGroupAt(position).onBind(view.getChild(position).getTag(ViewTag.V), position);
+		final View child = view.getChild(position);
+		getGroupAt(position).onBind(child.getTag(ViewTag.V), child, position);
 	}
 	
 	@Override
@@ -58,7 +59,8 @@ class DLLAdapter implements DRVNotifier
 		view.beginChange();
 		for (int i = 0 ; i < count ; ++i)
 		{
-			getGroupAt(start + i).onBind(view.getChild(start + i).getTag(ViewTag.V), start + i);
+			final View child = view.getChild(start + i);
+			getGroupAt(start + i).onBind(child.getTag(ViewTag.V), child, start + i);
 		}
 	}
 	
@@ -146,8 +148,8 @@ class DLLAdapter implements DRVNotifier
 		final View itemView = pair.first;
 		final Object v = pair.second;
 		itemView.setTag(ViewTag.V, v);
-		group.onFirstBind(v, position); // onCreate
-		group.onBind(v, position); // onBind
+		group.onFirstBind(v, itemView, position); // onCreate
+		group.onBind(v, itemView, position); // onBind
 		return itemView;
 	}
 }

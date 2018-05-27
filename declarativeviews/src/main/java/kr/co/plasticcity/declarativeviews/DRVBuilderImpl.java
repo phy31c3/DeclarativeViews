@@ -22,16 +22,14 @@ import kr.co.plasticcity.declarativeviews.function.TriConsumer;
 class DRVBuilderImpl implements DRVBuilder.Definable
 {
 	@NonNull
-	private final BiConsumer<DRVAdapter, Boolean> applier;
+	private final Consumer<DRVAdapter> applier;
 	@NonNull
 	private final DRVAdapter adapter;
-	private boolean hasFooter;
 	
-	DRVBuilderImpl(@NonNull final BiConsumer<DRVAdapter, Boolean> applier)
+	DRVBuilderImpl(@NonNull final Consumer<DRVAdapter> applier)
 	{
 		this.applier = applier;
 		this.adapter = new DRVAdapter();
-		this.hasFooter = false;
 	}
 	
 	@Override
@@ -43,14 +41,14 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 	@Override
 	public <M, V> SingleGroupAdder<M, V> addGroup(@Nullable final M model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType);
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, adapter::getItemCount, layoutResId, viewType);
 		return new GroupAdderImpl<>(group);
 	}
 	
 	@Override
 	public <M, V> SingleGroupAdder<M, V> addGroup(@Nullable final M model, @NonNull final Supplier<V> supplier)
 	{
-		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, supplier);
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, adapter::getItemCount, supplier);
 		return new GroupAdderImpl<>(group);
 	}
 	
@@ -66,14 +64,14 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
-			m.init(group, group);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, layoutResId, viewType);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
 		{
 			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType);
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, adapter::getItemCount, layoutResId, viewType);
 			return new GroupAdderImpl<>(group);
 		}
 	}
@@ -84,14 +82,14 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
-			m.init(group, group);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, supplier);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
 		{
 			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier);
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, adapter::getItemCount, supplier);
 			return new GroupAdderImpl<>(group);
 		}
 	}
@@ -108,8 +106,8 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
-			m.init(group, group);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, layoutResId, viewType);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
@@ -118,7 +116,7 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 			{
 				Log.w("DeclarativeRecyclerView", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
-			final DRVGroup<M, V> group = new DRVGroup<>(model, adapter, layoutResId, viewType);
+			final DRVGroup<M, V> group = new DRVGroup<>(model, adapter, adapter::getItemCount, layoutResId, viewType);
 			return new GroupAdderImpl<>(group);
 		}
 	}
@@ -129,8 +127,8 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
-			m.init(group, group);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, supplier);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
@@ -139,7 +137,7 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 			{
 				Log.w("DeclarativeRecyclerView", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
-			final DRVGroup<M, V> group = new DRVGroup<>(model, adapter, supplier);
+			final DRVGroup<M, V> group = new DRVGroup<>(model, adapter, adapter::getItemCount, supplier);
 			return new GroupAdderImpl<>(group);
 		}
 	}
@@ -153,18 +151,14 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 	@Override
 	public <M, V> FooterAdder<M, V> addFooter(@NonNull final M model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		hasFooter = true;
-		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType);
-		group.setFooter();
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, adapter::getItemCount, layoutResId, viewType);
 		return new FooterAdderImpl<>(group);
 	}
 	
 	@Override
 	public <M, V> FooterAdder<M, V> addFooter(@NonNull final M model, @NonNull final Supplier<V> supplier)
 	{
-		hasFooter = true;
-		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, supplier);
-		group.setFooter();
+		final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model), adapter, adapter::getItemCount, supplier);
 		return new FooterAdderImpl<>(group);
 	}
 	
@@ -177,20 +171,17 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 	@Override
 	public <M, V> FooterAdder<M, V> addFooter(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		hasFooter = true;
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
-			group.setFooter();
-			m.init(group, group);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, layoutResId, viewType);
+			m.init(group, group::getPositionInList);
 			return new FooterAdderImpl<>(group);
 		}
 		else
 		{
 			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType);
-			group.setFooter();
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, adapter::getItemCount, layoutResId, viewType);
 			return new FooterAdderImpl<>(group);
 		}
 	}
@@ -198,20 +189,17 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 	@Override
 	public <M, V> FooterAdder<M, V> addFooter(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier)
 	{
-		hasFooter = true;
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
-			group.setFooter();
-			m.init(group, group);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, supplier);
+			m.init(group, group::getPositionInList);
 			return new FooterAdderImpl<>(group);
 		}
 		else
 		{
 			Log.w("DeclarativeRecyclerView", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier);
-			group.setFooter();
+			final DRVGroup<M, V> group = new DRVGroup<>(Collections.singletonList(model.get()), adapter, adapter::getItemCount, supplier);
 			return new FooterAdderImpl<>(group);
 		}
 	}
@@ -219,7 +207,7 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 	@Override
 	public void build()
 	{
-		applier.accept(adapter, hasFooter);
+		applier.accept(adapter);
 	}
 	
 	@Override
@@ -284,6 +272,13 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		}
 		
 		@Override
+		public GroupAdder<M, V> setDivider(final int heightDp, final int colorRes, final boolean includeLast)
+		{
+			group.setDividerCreator(new DRVDivider.Creator(heightDp, colorRes, includeLast));
+			return this;
+		}
+		
+		@Override
 		public Definable apply()
 		{
 			adapter.addGroup(group);
@@ -299,6 +294,7 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		private FooterAdderImpl(@NonNull final DRVGroup<M, V> group)
 		{
 			this.group = group;
+			this.group.setFooter();
 		}
 		
 		@Override
