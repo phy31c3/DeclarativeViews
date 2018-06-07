@@ -188,12 +188,18 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	}
 	
 	@Override
+	public void notifyChangedWithNoAnimation(final int position)
+	{
+		notifier.notifyChangedWithNoAnimation(this.position + position);
+	}
+	
+	@Override
 	public void notifyInserted(final int position)
 	{
 		notifier.notifyInserted(this.position + position);
 		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == model.size() - 1 && position > 0)
 		{
-			notifier.notifyChanged(this.position + position - 1);
+			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
 	}
 	
@@ -203,7 +209,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		notifier.notifyRemoved(this.position + position);
 		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == model.size() && position > 0)
 		{
-			notifier.notifyChanged(this.position + position - 1);
+			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
 	}
 	

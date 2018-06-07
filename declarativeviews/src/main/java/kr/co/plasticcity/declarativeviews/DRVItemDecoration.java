@@ -44,7 +44,7 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 			
 			if (footerNotPrepared || inserted || modifying)
 			{
-				view.post(() -> parent.getAdapter().notifyItemChanged(itemCount - 1));
+				view.post(() -> ((DRVNotifier)parent.getAdapter()).notifyChangedWithNoAnimation(itemCount - 1));
 				outRect.top = lastPadding;
 			}
 			else

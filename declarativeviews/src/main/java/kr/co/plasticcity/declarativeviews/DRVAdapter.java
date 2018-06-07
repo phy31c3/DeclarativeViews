@@ -83,6 +83,12 @@ class DRVAdapter extends RecyclerView.Adapter<DRVAdapter.ViewHolder> implements 
 	}
 	
 	@Override
+	public void notifyChangedWithNoAnimation(final int position)
+	{
+		super.notifyItemChanged(position, Boolean.FALSE);
+	}
+	
+	@Override
 	public void notifyInserted(final int position)
 	{
 		reorder();

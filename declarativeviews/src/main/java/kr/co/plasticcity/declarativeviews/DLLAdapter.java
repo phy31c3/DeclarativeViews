@@ -39,6 +39,14 @@ class DLLAdapter implements DRVNotifier
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
+	public void notifyChangedWithNoAnimation(final int position)
+	{
+		final View child = view.getChild(position);
+		getGroupAt(position).onBind(child.getTag(ViewTag.V), child, position);
+	}
+	
+	@Override
 	public void notifyInserted(final int position)
 	{
 		reorder();
