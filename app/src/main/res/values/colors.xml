@@ -3,4 +3,16 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!-- Common -->
+    <color name="darkest">#383431</color>
+    <color name="darker">#4A473E</color>
+    <color name="dark">#646255</color>
+    <color name="medium">#A8A38F</color>
+    <color name="light">#C8C4AB</color>
+    <color name="lighter">#D8D2B8</color>
+    <color name="lightest">#E8E3CE</color>
+
+    <!-- Tag -->
+    <color name="orange">#bb8a50</color>
 </resources>

@@ -24,26 +24,26 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	@NonNull
 	private DRVNotifier notifier;
 	@NonNull
-	private DRVCalculator calculator;
+	private Function<Integer, Integer> posInList;
 	
 	DRVModel()
 	{
 		this.list = new ArrayList<>();
 		this.notifier = DRVNotifier.empty();
-		this.calculator = DRVCalculator.empty();
+		this.posInList = p -> 0;
 	}
 	
 	DRVModel(@NonNull final List<M> l)
 	{
 		this.list = l;
 		this.notifier = DRVNotifier.empty();
-		this.calculator = DRVCalculator.empty();
+		this.posInList = p -> 0;
 	}
 	
-	void init(@NonNull final DRVNotifier notifier, @NonNull final DRVCalculator calculator)
+	void init(@NonNull final DRVNotifier notifier, @NonNull final Function<Integer, Integer> posInList)
 	{
 		this.notifier = notifier;
-		this.calculator = calculator;
+		this.posInList = posInList;
 	}
 	
 	/////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	@Override
 	public int getPositionInList()
 	{
-		return calculator.getPositionInList(0);
+		return posInList.apply(0);
 	}
 	
 	@Override
@@ -237,13 +237,13 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	@Override
 	public int getPositionInList(final int index)
 	{
-		return calculator.getPositionInList(index);
+		return posInList.apply(index);
 	}
 	
 	@Override
 	public int getPositionInList(@NonNull final M m)
 	{
-		return calculator.getPositionInList(list.indexOf(m));
+		return posInList.apply(list.indexOf(m));
 	}
 	
 	@Override

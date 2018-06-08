@@ -1,9 +1,15 @@
 package kr.co.plasticcity.declarativeviews.sample;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -16,6 +22,7 @@ import kr.co.plasticcity.declarativeviews.ListModel;
 import kr.co.plasticcity.declarativeviews.SingleModel;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DrvActivityBinding;
 import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemBinding;
+import kr.co.plasticcity.declarativeviews.sample.databinding.DrvItemFooterBinding;
 
 public class DRVActivity extends AppCompatActivity
 {
@@ -33,13 +40,13 @@ public class DRVActivity extends AppCompatActivity
 				       switch (position)
 				       {
 				       case 0:
-					       binding.dvp.postDelayed(() -> new Thread(() -> buildFirstPage(DRVPage)).start(), 500);
+					       buildFirstPage(DRVPage);
 					       break;
 				       case 1:
 					       buildSecondPage(DRVPage);
 					       break;
 				       case 2:
-					       buildThirdPage(DRVPage);
+					       binding.dvp.postDelayed(() -> new Thread(() -> buildThirdPage(DRVPage)).start(), 500);
 					       break;
 				       }
 			       })
@@ -48,6 +55,121 @@ public class DRVActivity extends AppCompatActivity
 	}
 	
 	private void buildFirstPage(@NonNull final DRVPage page)
+	{
+		final ListModel<Model> listModel = ListModel.of(new Model("0"));
+		final SingleModel<String> footerModel = SingleModel.of("");
+		
+		page.binding.drv.build(builder ->
+		{
+			builder.addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
+			       .onCreate(v ->
+			       {
+				       v.chk.setVisibility(View.VISIBLE);
+			       })
+			       .onBind((v, m, position) ->
+			       {
+				       v.txv.setText(m.value);
+				       v.getRoot().setPadding(0, Integer.parseInt(m.value), 0, 0);
+				       v.btn.setOnClickListener(v1 ->
+				       {
+					       listModel.set(position.inGroup, new Model("100"));
+					       footerModel.performChanged();
+				       });
+			       })
+			       .setDivider(3, R.color.medium, false)
+			       .apply()
+			
+			       .addFooter(footerModel, R.layout.drv_item_footer, DrvItemFooterBinding.class)
+			       .onCreate(v ->
+			       {
+				       v.btnPositive.setOnClickListener(v1 -> listModel.add(new Model("0")));
+			       })
+			       .apply()
+			
+			       .build();
+		});
+		
+		page.binding.btn1.setText("ADD");
+		page.binding.btn1.setOnClickListener(v ->
+		{
+			listModel.add(new Model("0"));
+		});
+		page.binding.btn2.setText("ADDx2");
+		page.binding.btn2.setOnClickListener(v ->
+		{
+			listModel.add(new Model("0"));
+			listModel.add(new Model("0"));
+		});
+		page.binding.btn3.setText("REMOVE");
+		page.binding.btn3.setOnClickListener(v ->
+		{
+			if (!listModel.isEmpty())
+			{
+				listModel.remove(listModel.size() - 1);
+			}
+		});
+	}
+	
+	private void buildSecondPage(@NonNull final DRVPage page)
+	{
+		final SingleModel<String> m0 = SingleModel.of("그냥");
+		final ListModel<Object> m1 = ListModel.of("", "", "");
+		final ListModel<Model> listModel = ListModel.of(createRandomList());
+		final ListModel<Object> m2 = ListModel.of("", "");
+		final SingleModel<String> m3 = SingleModel.of("난 마지막?");
+		
+		page.binding.drv.build(builder ->
+		{
+			builder.addGroup(m0, R.layout.drv_item, DrvItemBinding.class)
+			       .onBind((v, m) ->
+			       {
+				       v.txv.setText(m);
+			       })
+			       .apply()
+			
+			       .addGroup(m1, R.layout.drv_item, DrvItemBinding.class)
+			       .onBind((v, m) ->
+			       {
+				       v.txv.setText("자리만 차지하는 애들");
+			       })
+			       .apply()
+			
+			       .addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
+			       .onCreate(v ->
+			       {
+				       v.chk.setVisibility(View.VISIBLE);
+			       })
+			       .onBind((v, m) ->
+			       {
+				       v.txv.setText(m.value);
+			       })
+			       .apply()
+			
+			       .addGroup(m2, R.layout.drv_item, DrvItemBinding.class)
+			       .onBind((v, m) ->
+			       {
+				       v.txv.setText("자리만 차지하는 애들");
+			       })
+			       .apply()
+			
+			       .addGroup(m3, R.layout.drv_item, DrvItemBinding.class)
+			       .onBind((v, m) ->
+			       {
+				       v.txv.setText(m);
+			       })
+			       .apply()
+			
+			       .build();
+		});
+		
+		page.binding.btn1.setText("UPDATE");
+		page.binding.btn1.setOnClickListener(v ->
+		{
+			listModel.update(createRandomList());
+		});
+	}
+	
+	private void buildThirdPage(@NonNull final DRVPage page)
 	{
 		final SingleModel<String> emptyModel = SingleModel.empty();
 		final SingleModel<?> nullModel = SingleModel.of(new Object());
@@ -251,124 +373,6 @@ public class DRVActivity extends AppCompatActivity
 		});
 	}
 	
-	private void buildSecondPage(@NonNull final DRVPage page)
-	{
-		final SingleModel<String> m0 = SingleModel.of("그냥");
-		final ListModel<Object> m1 = ListModel.of("", "", "");
-		final ListModel<Model> listModel = ListModel.of(createRandomList());
-		final ListModel<Object> m2 = ListModel.of("", "");
-		final SingleModel<String> m3 = SingleModel.of("난 마지막?");
-		
-		page.binding.drv.build(builder ->
-		{
-			builder.addGroup(m0, R.layout.drv_item, DrvItemBinding.class)
-			       .onBind((v, m) ->
-			       {
-				       v.txv.setText(m);
-			       })
-			       .apply()
-			
-			       .addGroup(m1, R.layout.drv_item, DrvItemBinding.class)
-			       .onBind((v, m) ->
-			       {
-				       v.txv.setText("자리만 차지하는 애들");
-			       })
-			       .apply()
-			
-			       .addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
-			       .onCreate(v ->
-			       {
-				       v.chk.setVisibility(View.VISIBLE);
-			       })
-			       .onBind((v, m) ->
-			       {
-				       v.txv.setText(m.value);
-			       })
-			       .apply()
-			
-			       .addGroup(m2, R.layout.drv_item, DrvItemBinding.class)
-			       .onBind((v, m) ->
-			       {
-				       v.txv.setText("자리만 차지하는 애들");
-			       })
-			       .apply()
-			
-			       .addGroup(m3, R.layout.drv_item, DrvItemBinding.class)
-			       .onBind((v, m) ->
-			       {
-				       v.txv.setText(m);
-			       })
-			       .apply()
-			
-			       .build();
-		});
-		
-		page.binding.btn1.setText("UPDATE");
-		page.binding.btn1.setOnClickListener(v ->
-		{
-			listModel.update(createRandomList());
-		});
-	}
-	
-	private void buildThirdPage(@NonNull final DRVPage page)
-	{
-		final ListModel<Model> listModel = ListModel.of(new Model("0"));
-		final SingleModel<String> footerModel = SingleModel.of("난 마지막?");
-		
-		page.binding.drv.build(builder ->
-		{
-			builder.addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
-			       .onCreate(v ->
-			       {
-				       v.chk.setVisibility(View.VISIBLE);
-			       })
-			       .onBind((v, m, position) ->
-			       {
-				       v.txv.setText(m.value);
-				       v.getRoot().setPadding(0, Integer.parseInt(m.value), 0, 0);
-				       v.btn.setOnClickListener(v1 ->
-				       {
-					       listModel.set(position.inGroup, new Model("100"));
-					       footerModel.performChanged();
-				       });
-			       })
-			       .apply()
-			
-			       .addFooter(footerModel, R.layout.drv_item, DrvItemBinding.class)
-			       .onCreate(v ->
-			       {
-				       v.getRoot().setPadding(0, 50, 0, 0);
-			       })
-			       .onBind((v, m) ->
-			       {
-				       v.txv.setText(m);
-			       })
-			       .apply()
-			
-			       .build();
-		});
-		
-		page.binding.btn1.setText("ADD");
-		page.binding.btn1.setOnClickListener(v ->
-		{
-			listModel.add(new Model("0"));
-		});
-		page.binding.btn2.setText("ADDx2");
-		page.binding.btn2.setOnClickListener(v ->
-		{
-			listModel.add(new Model("0"));
-			listModel.add(new Model("0"));
-		});
-		page.binding.btn3.setText("REMOVE");
-		page.binding.btn3.setOnClickListener(v ->
-		{
-			if (!listModel.isEmpty())
-			{
-				listModel.remove(listModel.size() - 1);
-			}
-		});
-	}
-	
 	private List<Model> createRandomList()
 	{
 		final List<Model> list = new ArrayList<>();
@@ -413,6 +417,48 @@ public class DRVActivity extends AppCompatActivity
 		public int hashCode()
 		{
 			return value.hashCode();
+		}
+	}
+	
+	private static class Divider extends RecyclerView.ItemDecoration
+	{
+		@NonNull
+		private final GradientDrawable lineDrawable;
+		private final int lineHeight;
+		
+		public Divider(@NonNull final Context context, final float heightDp)
+		{
+			this.lineDrawable = new GradientDrawable();
+			this.lineDrawable.setColor(0xffff0000);
+			this.lineHeight = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp, context.getResources().getDisplayMetrics()));
+		}
+		
+		@Override
+		public void onDraw(final Canvas c, final RecyclerView parent, final RecyclerView.State state)
+		{
+			super.onDraw(c, parent, state);
+			
+			final int lineLeft = parent.getPaddingLeft();
+			final int lineRight = parent.getWidth() - parent.getPaddingRight();
+			final int childCount = parent.getChildCount();
+			for (int i = 0 ; i < childCount ; ++i)
+			{
+				final View child = parent.getChildAt(i);
+				final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)child.getLayoutParams();
+				final int lineTop = child.getBottom() + params.bottomMargin + Math.round(child.getTranslationY());
+				final int lineBottom = lineTop + lineHeight;
+				lineDrawable.setBounds(lineLeft, lineTop, lineRight, lineBottom);
+				lineDrawable.draw(c);
+			}
+		}
+		
+		@Override
+		public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state)
+		{
+			if (parent.getChildAdapterPosition(view) < parent.getAdapter().getItemCount() - 1)
+			{
+				outRect.bottom = lineHeight;
+			}
 		}
 	}
 }
