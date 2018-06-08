@@ -42,7 +42,13 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 			final boolean inserted = itemCount > parent.getChildCount();
 			final boolean modifying = itemCount > 1 && footerHashes.contains(parent.getChildAt(0).hashCode());
 			
-			if (footerNotPrepared || inserted || modifying)
+			if (footerNotPrepared)
+			{
+				view.post(() -> ((DRVNotifier)parent.getAdapter()).notifyChangedWithNoAnimation(itemCount - 1));
+				lastPadding = parent.getHeight();
+				outRect.top = lastPadding;
+			}
+			else if (inserted || modifying)
 			{
 				view.post(() -> ((DRVNotifier)parent.getAdapter()).notifyChangedWithNoAnimation(itemCount - 1));
 				outRect.top = lastPadding;
