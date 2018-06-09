@@ -59,6 +59,8 @@ public interface DRVBuilder
 		
 		GroupAdder<M, V> setDivider(final int heightDp, @ColorRes final int colorRes, final boolean includeLast);
 		
+		GroupAdder<M, V> setPlaceholder(final int count, @NonNull final BiConsumer<V, M> onPlaceholderBind);
+		
 		Definable apply();
 	}
 	
