@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import kr.co.plasticcity.declarativeviews.function.BiConsumer;
 import kr.co.plasticcity.declarativeviews.function.Consumer;
 import kr.co.plasticcity.declarativeviews.function.Supplier;
 import kr.co.plasticcity.declarativeviews.function.TriConsumer;
@@ -41,6 +42,9 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	private TriConsumer<V, M, ItemPosition> onBind;
 	@Nullable
 	private DRVDivider.Creator dividerCreator;
+	@Nullable
+	private BiConsumer<V, ItemPosition> onPlaceholderBind;
+	private int placeholderCount;
 	private boolean isFooter;
 	private int position;
 	
@@ -84,6 +88,12 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		this.dividerCreator = dividerCreator;
 	}
 	
+	void setPlaceholder(final int count, @NonNull final BiConsumer<V, ItemPosition> onPlaceholderBind)
+	{
+		this.placeholderCount = count;
+		this.onPlaceholderBind = onPlaceholderBind;
+	}
+	
 	void setFooter()
 	{
 		isFooter = true;
@@ -96,7 +106,14 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	
 	int size()
 	{
-		return model.size();
+		if (model.size() < placeholderCount)
+		{
+			return placeholderCount;
+		}
+		else
+		{
+			return model.size();
+		}
 	}
 	
 	int getPositionInList(final int positionInGroup)
@@ -155,9 +172,12 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		return onFirstBind != null;
 	}
 	
-	void onFirstBind(@NonNull final V v, @NonNull final View view, final int pos)
+	/**
+	 * @return if true, onPlaceholderBind was bound, not onFirstBind
+	 */
+	boolean onFirstBind(@NonNull final V v, @NonNull final View view, final int pos)
 	{
-		performBind(onFirstBind, v, view, pos);
+		return performBind(onFirstBind, v, view, pos);
 	}
 	
 	void onBind(@NonNull final V v, @NonNull final View view, final int pos)
@@ -165,19 +185,33 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		performBind(onBind, v, view, pos);
 	}
 	
-	private void performBind(@Nullable final TriConsumer<V, M, ItemPosition> bindFunc, @NonNull final V v, @NonNull final View view, final int pos)
+	private boolean performBind(@Nullable final TriConsumer<V, M, ItemPosition> bindFunc, @NonNull final V v, @NonNull final View view, final int pos)
 	{
 		final int local = pos - this.position;
-		final M m = model.get(local);
 		final ItemPosition itemPosition = new ItemPosition(local, pos, model::size, listSize);
+		
 		final DRVDivider divider = (DRVDivider)view.getTag(ViewTag.DIVIDER);
 		if (divider != null)
 		{
 			divider.setItemPosition(itemPosition);
 		}
-		if (m != null && bindFunc != null)
+		
+		if (local < model.size())
 		{
-			bindFunc.accept(v, m, itemPosition);
+			final M m = model.get(local);
+			if (m != null && bindFunc != null)
+			{
+				bindFunc.accept(v, m, itemPosition);
+			}
+			return false;
+		}
+		else
+		{
+			if (onPlaceholderBind != null)
+			{
+				onPlaceholderBind.accept(v, itemPosition);
+			}
+			return true;
 		}
 	}
 	

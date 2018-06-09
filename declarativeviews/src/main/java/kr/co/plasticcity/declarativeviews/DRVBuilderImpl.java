@@ -279,9 +279,22 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		}
 		
 		@Override
-		public GroupAdder<M, V> setPlaceholder(final int count, @NonNull final BiConsumer<V, M> onPlaceholderBind)
+		public GroupAdder<M, V> setPlaceholder(final int count, @NonNull final Consumer<V> onPlaceholderBind)
 		{
-			// TODO: 2018-06-09
+			if (count > 0)
+			{
+				group.setPlaceholder(count, (v, position) -> onPlaceholderBind.accept(v));
+			}
+			return this;
+		}
+		
+		@Override
+		public GroupAdder<M, V> setPlaceholder(final int count, @NonNull final BiConsumer<V, ItemPosition> onPlaceholderBind)
+		{
+			if (count > 0)
+			{
+				group.setPlaceholder(count, onPlaceholderBind);
+			}
 			return this;
 		}
 		
