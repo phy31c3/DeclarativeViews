@@ -237,37 +237,37 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		}
 		
 		@Override
-		public SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> func)
+		public SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate)
 		{
-			group.setOnCreate(func);
+			group.setOnCreate(onCreate);
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func)
+		public GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> onFirstBind)
 		{
-			group.setOnFirstBind((v, m, position) -> func.accept(v, m));
+			group.setOnFirstBind((v, m, position) -> onFirstBind.accept(v, m));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind)
 		{
-			group.setOnFirstBind(func);
+			group.setOnFirstBind(onFirstBind);
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func)
+		public GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind)
 		{
-			group.setOnBind((v, m, position) -> func.accept(v, m));
+			group.setOnBind((v, m, position) -> onBind.accept(v, m));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind)
 		{
-			group.setOnBind(func);
+			group.setOnBind(onBind);
 			return this;
 		}
 		
@@ -298,37 +298,37 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		}
 		
 		@Override
-		public FooterAdder<M, V> onCreate(@NonNull final Consumer<V> func)
+		public FooterAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate)
 		{
-			group.setOnCreate(func);
+			group.setOnCreate(onCreate);
 			return this;
 		}
 		
 		@Override
-		public FooterAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func)
+		public FooterAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> onFirstBind)
 		{
-			group.setOnFirstBind((v, m, position) -> func.accept(v, m));
+			group.setOnFirstBind((v, m, position) -> onFirstBind.accept(v, m));
 			return this;
 		}
 		
 		@Override
-		public FooterAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public FooterAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind)
 		{
-			group.setOnFirstBind(func);
+			group.setOnFirstBind(onFirstBind);
 			return this;
 		}
 		
 		@Override
-		public FooterAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func)
+		public FooterAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind)
 		{
-			group.setOnBind((v, m, position) -> func.accept(v, m));
+			group.setOnBind((v, m, position) -> onBind.accept(v, m));
 			return this;
 		}
 		
 		@Override
-		public FooterAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public FooterAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind)
 		{
-			group.setOnBind(func);
+			group.setOnBind(onBind);
 			return this;
 		}
 		

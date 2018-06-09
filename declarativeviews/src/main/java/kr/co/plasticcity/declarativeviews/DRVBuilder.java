@@ -51,11 +51,11 @@ public interface DRVBuilder
 	
 	interface GroupAdder<M, V>
 	{
-		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
+		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
 		
-		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
 		
-		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
 		
 		GroupAdder<M, V> setDivider(final int heightDp, @ColorRes final int colorRes, final boolean includeLast);
 		
@@ -64,30 +64,30 @@ public interface DRVBuilder
 	
 	interface SingleGroupAdder<M, V> extends GroupAdder<M, V>
 	{
-		SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
+		SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
 		
-		GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> onFirstBind);
 		
-		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind);
 		
-		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
 		
-		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
 		
 		Definable apply();
 	}
 	
 	interface FooterAdder<M, V>
 	{
-		FooterAdder<M, V> onCreate(@NonNull final Consumer<V> func);
+		FooterAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
 		
-		FooterAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> func);
+		FooterAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> onFirstBind);
 		
-		FooterAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		FooterAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind);
 		
-		FooterAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
+		FooterAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
 		
-		FooterAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		FooterAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
 		
 		Buildable apply();
 	}
