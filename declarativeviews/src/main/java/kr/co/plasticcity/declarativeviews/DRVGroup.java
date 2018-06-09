@@ -41,11 +41,11 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	@Nullable
 	private TriConsumer<V, M, ItemPosition> onBind;
 	@Nullable
-	private DRVDivider.Creator dividerCreator;
-	@Nullable
 	private BiConsumer<V, ItemPosition> onPlaceholderBind;
-	private int placeholderCount;
+	@Nullable
+	private DRVDivider.Creator dividerCreator;
 	private boolean isFooter;
+	private int placeholderCount;
 	private int position;
 	
 	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<Integer> listSize, final int layoutResId, @NonNull final Class<V> viewType)

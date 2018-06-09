@@ -272,13 +272,6 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		}
 		
 		@Override
-		public GroupAdder<M, V> setDivider(final int heightDp, final int colorRes, final boolean includeLast)
-		{
-			group.setDividerCreator(new DRVDivider.Creator(heightDp, colorRes, includeLast));
-			return this;
-		}
-		
-		@Override
 		public GroupAdder<M, V> setPlaceholder(final int count, @NonNull final Consumer<V> onPlaceholderBind)
 		{
 			if (count > 0)
@@ -295,6 +288,13 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 			{
 				group.setPlaceholder(count, onPlaceholderBind);
 			}
+			return this;
+		}
+		
+		@Override
+		public GroupAdder<M, V> setDivider(final int heightDp, final int colorRes, final boolean includeLast)
+		{
+			group.setDividerCreator(new DRVDivider.Creator(heightDp, colorRes, includeLast));
 			return this;
 		}
 		

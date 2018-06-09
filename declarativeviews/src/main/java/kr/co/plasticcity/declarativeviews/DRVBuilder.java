@@ -57,11 +57,11 @@ public interface DRVBuilder
 		
 		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
 		
-		GroupAdder<M, V> setDivider(final int heightDp, @ColorRes final int colorRes, final boolean includeLast);
-		
 		GroupAdder<M, V> setPlaceholder(final int count, @NonNull final Consumer<V> onPlaceholderBind);
 		
 		GroupAdder<M, V> setPlaceholder(final int count, @NonNull final BiConsumer<V, ItemPosition> onPlaceholderBind);
+		
+		GroupAdder<M, V> setDivider(final int heightDp, @ColorRes final int colorRes, final boolean includeLast);
 		
 		Definable apply();
 	}
