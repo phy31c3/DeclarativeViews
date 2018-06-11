@@ -258,7 +258,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		}
 		
 		// TODO: 2018-06-10 중간에 삽입 되었을때 포지션 꼬임 현상 수정
-		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == size() - 1)
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && position == size() - 1)
 		{
 			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
@@ -278,7 +278,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		}
 		
 		// TODO: 2018-06-10 중간에 삽입 되었을때 포지션 꼬임 현상 수정
-		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == size())
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && position == size())
 		{
 			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}

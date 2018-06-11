@@ -84,7 +84,7 @@ public class DRVActivity extends AppCompatActivity
 				       v.btn.setVisibility(View.GONE);
 				       v.getRoot().setPadding(0, 0, 0, 0);
 			       })
-			       .setDivider(3, R.color.medium, false)
+			       .setDividerExcludeLast(3, R.color.medium)
 			       .apply()
 			
 			       .addFooter(footerModel, R.layout.drv_item_footer, DrvItemFooterBinding.class)

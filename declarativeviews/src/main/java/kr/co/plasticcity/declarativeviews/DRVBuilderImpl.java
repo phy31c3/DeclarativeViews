@@ -292,9 +292,16 @@ class DRVBuilderImpl implements DRVBuilder.Definable
 		}
 		
 		@Override
-		public GroupAdder<M, V> setDivider(final int heightDp, final int colorRes, final boolean includeLast)
+		public GroupAdder<M, V> setDivider(final int heightDp, final int colorRes)
 		{
-			group.setDividerCreator(new DRVDivider.Creator(heightDp, colorRes, includeLast));
+			group.setDividerCreator(new DRVDivider.Creator(heightDp, colorRes, false));
+			return this;
+		}
+		
+		@Override
+		public GroupAdder<M, V> setDividerExcludeLast(final int heightDp, final int colorRes)
+		{
+			group.setDividerCreator(new DRVDivider.Creator(heightDp, colorRes, true));
 			return this;
 		}
 		
