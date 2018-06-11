@@ -11,11 +11,10 @@ import kr.co.plasticcity.declarativeviews.function.Function;
 
 /**
  * Created by JongsunYu on 2017-12-27.
- */
-
-/**
+ *
  * @param <M> Recommend that M be an immutable object.
  */
+
 public interface SingleModel<M>
 {
 	static <M> SingleModel<M> of(@NonNull final M m)

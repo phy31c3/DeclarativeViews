@@ -14,11 +14,10 @@ import kr.co.plasticcity.declarativeviews.function.Function;
 
 /**
  * Created by JongsunYu on 2017-12-27.
- */
-
-/**
+ *
  * @param <M> Recommend that M be an immutable object.
  */
+
 public interface ListModel<M> extends List<M>
 {
 	/**
@@ -39,6 +38,7 @@ public interface ListModel<M> extends List<M>
 		}
 	}
 	
+	@SafeVarargs
 	static <M> ListModel<M> of(@NonNull final M... l)
 	{
 		return new DRVModel<>(new ArrayList<>(Arrays.asList(l)));

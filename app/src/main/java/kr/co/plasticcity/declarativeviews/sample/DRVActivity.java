@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,12 +70,19 @@ public class DRVActivity extends AppCompatActivity
 			       .onBind((v, m, position) ->
 			       {
 				       v.txv.setText(m.value);
-				       v.getRoot().setPadding(0, Integer.parseInt(m.value), 0, 0);
+				       v.btn.setVisibility(View.VISIBLE);
 				       v.btn.setOnClickListener(v1 ->
 				       {
 					       listModel.set(position.inGroup, new Model("100"));
 					       footerModel.performChanged();
 				       });
+				       v.getRoot().setPadding(0, Integer.parseInt(m.value), 0, 0);
+			       })
+			       .setPlaceholder(2, v ->
+			       {
+				       v.txv.setText("Placeholder");
+				       v.btn.setVisibility(View.GONE);
+				       v.getRoot().setPadding(0, 0, 0, 0);
 			       })
 			       .setDivider(3, R.color.medium, false)
 			       .apply()
@@ -94,11 +102,10 @@ public class DRVActivity extends AppCompatActivity
 		{
 			listModel.add(new Model("0"));
 		});
-		page.binding.btn2.setText("ADDx2");
+		page.binding.btn2.setText("ADDx3");
 		page.binding.btn2.setOnClickListener(v ->
 		{
-			listModel.add(new Model("0"));
-			listModel.add(new Model("0"));
+			listModel.addAll(Arrays.asList(new Model("0"), new Model("0"), new Model("0")));
 		});
 		page.binding.btn3.setText("REMOVE");
 		page.binding.btn3.setOnClickListener(v ->
@@ -106,6 +113,22 @@ public class DRVActivity extends AppCompatActivity
 			if (!listModel.isEmpty())
 			{
 				listModel.remove(listModel.size() - 1);
+			}
+		});
+		page.binding.btn4.setText("RM_F");
+		page.binding.btn4.setOnClickListener(v ->
+		{
+			if (!listModel.isEmpty())
+			{
+				listModel.remove(0);
+			}
+		});
+		page.binding.btn5.setText("CLEAR");
+		page.binding.btn5.setOnClickListener(v ->
+		{
+			if (!listModel.isEmpty())
+			{
+				listModel.clear();
 			}
 		});
 	}
@@ -135,13 +158,15 @@ public class DRVActivity extends AppCompatActivity
 			       .apply()
 			
 			       .addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
-			       .onCreate(v ->
-			       {
-				       v.chk.setVisibility(View.VISIBLE);
-			       })
 			       .onBind((v, m) ->
 			       {
+				       v.chk.setVisibility(View.VISIBLE);
 				       v.txv.setText(m.value);
+			       })
+			       .setPlaceholder(10, v ->
+			       {
+				       v.chk.setVisibility(View.GONE);
+				       v.txv.setText("Placeholder");
 			       })
 			       .apply()
 			
@@ -378,7 +403,7 @@ public class DRVActivity extends AppCompatActivity
 		final List<Model> list = new ArrayList<>();
 		for (int i = 0 ; i < 20 ; ++i)
 		{
-			if ((int)(Math.random() * 2) < 1)
+			if ((int)(Math.random() * 5) < 2)
 			{
 				list.add(new Model("" + i));
 			}
