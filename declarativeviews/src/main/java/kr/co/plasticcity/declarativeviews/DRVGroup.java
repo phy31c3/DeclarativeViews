@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.plasticcity.declarativeviews.function.BiConsumer;
@@ -41,11 +42,10 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	@Nullable
 	private TriConsumer<V, M, ItemPosition> onBind;
 	@Nullable
-	private BiConsumer<V, ItemPosition> onPlaceholderBind;
+	private Placeholder placeholder;
 	@Nullable
 	private DRVDivider.Creator dividerCreator;
 	private boolean isFooter;
-	private int placeholderCount;
 	private int position;
 	
 	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<Integer> listSize, final int layoutResId, @NonNull final Class<V> viewType)
@@ -90,8 +90,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	
 	void setPlaceholder(final int count, @NonNull final BiConsumer<V, ItemPosition> onPlaceholderBind)
 	{
-		this.placeholderCount = count;
-		this.onPlaceholderBind = onPlaceholderBind;
+		this.placeholder = new Placeholder(count, onPlaceholderBind);
 	}
 	
 	void setFooter()
@@ -102,13 +101,17 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	void setPosition(int position)
 	{
 		this.position = position;
+		if (placeholder != null)
+		{
+			placeholder.reset();
+		}
 	}
 	
 	int size()
 	{
-		if (model.size() < placeholderCount)
+		if (placeholder != null && model.size() < placeholder.count)
 		{
-			return placeholderCount;
+			return placeholder.count;
 		}
 		else
 		{
@@ -188,7 +191,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	private boolean performBind(@Nullable final TriConsumer<V, M, ItemPosition> bindFunc, @NonNull final V v, @NonNull final View view, final int pos)
 	{
 		final int local = pos - this.position;
-		final ItemPosition itemPosition = new ItemPosition(local, pos, model::size, listSize);
+		final ItemPosition itemPosition = new ItemPosition(local, pos, this::size, listSize);
 		
 		final DRVDivider divider = (DRVDivider)view.getTag(ViewTag.DIVIDER);
 		if (divider != null)
@@ -196,7 +199,29 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 			divider.setItemPosition(itemPosition);
 		}
 		
-		if (local < model.size())
+		if (placeholder != null)
+		{
+			if (local < model.size())
+			{
+				if (local < placeholder.count)
+				{
+					placeholder.modelPlaced.set(local, true);
+				}
+				final M m = model.get(local);
+				if (m != null && bindFunc != null)
+				{
+					bindFunc.accept(v, m, itemPosition);
+				}
+				return false;
+			}
+			else
+			{
+				placeholder.modelPlaced.set(local, false);
+				placeholder.onBind.accept(v, itemPosition);
+				return true;
+			}
+		}
+		else
 		{
 			final M m = model.get(local);
 			if (m != null && bindFunc != null)
@@ -204,14 +229,6 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 				bindFunc.accept(v, m, itemPosition);
 			}
 			return false;
-		}
-		else
-		{
-			if (onPlaceholderBind != null)
-			{
-				onPlaceholderBind.accept(v, itemPosition);
-			}
-			return true;
 		}
 	}
 	
@@ -230,8 +247,17 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	@Override
 	public void notifyInserted(final int position)
 	{
-		notifier.notifyInserted(this.position + position);
-		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == model.size() - 1 && position > 0)
+		if (placeholder != null && model.size() <= placeholder.count)
+		{
+			notifier.notifyRangeChanged(this.position + position, model.size() - position);
+			placeholder.modelPlaced.set(model.size() - 1, true);
+		}
+		else
+		{
+			notifier.notifyInserted(this.position + position);
+		}
+		
+		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == size() - 1)
 		{
 			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
@@ -240,8 +266,17 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	@Override
 	public void notifyRemoved(final int position)
 	{
-		notifier.notifyRemoved(this.position + position);
-		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == model.size() && position > 0)
+		if (placeholder != null && model.size() < placeholder.count)
+		{
+			notifier.notifyRangeChanged(this.position + position, model.size() - position + 1);
+			placeholder.modelPlaced.set(model.size(), false);
+		}
+		else
+		{
+			notifier.notifyRemoved(this.position + position);
+		}
+		
+		if (dividerCreator != null && !dividerCreator.isIncludeLast() && position == size())
 		{
 			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
@@ -256,24 +291,94 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	@Override
 	public void notifyRangeInserted(final int start, final int count)
 	{
-		notifier.notifyRangeInserted(position + start, count);
+		final int beforeSize = model.size() - count;
+		if (placeholder != null && beforeSize < placeholder.count)
+		{
+			final int overflow = model.size() - placeholder.count;
+			final int placedSize = overflow < 0 ? model.size() : placeholder.count;
+			
+			notifier.notifyRangeChanged(this.position + start, placedSize - start);
+			for (int i = beforeSize ; i < placedSize ; ++i)
+			{
+				placeholder.modelPlaced.set(i, true);
+			}
+			
+			if (overflow > 0)
+			{
+				notifier.notifyRangeInserted(position + placeholder.count, overflow);
+			}
+		}
+		else
+		{
+			notifier.notifyRangeInserted(position + start, count);
+		}
+		// TODO: 2018-06-10 마지막 아이템 디바이더 갱신
 	}
 	
 	@Override
 	public void notifyRangeRemoved(final int start, final int count)
 	{
-		notifier.notifyRangeRemoved(position + start, count);
+		// TODO: 2018-06-10 플레이스홀더 처리
+		if (placeholder != null && model.size() < placeholder.count)
+		{
+			final int beforeSize = model.size() + count;
+			final int overflow = beforeSize - placeholder.count;
+			final int placedSize = overflow < 0 ? beforeSize : placeholder.count;
+			
+			if (overflow > 0)
+			{
+				notifier.notifyRangeRemoved(position + placeholder.count, overflow);
+			}
+			
+			notifier.notifyRangeChanged(this.position + start, placedSize - start);
+			for (int i = model.size() ; i < placedSize ; ++i)
+			{
+				placeholder.modelPlaced.set(i, false);
+			}
+		}
+		else
+		{
+			notifier.notifyRangeRemoved(position + start, count);
+		}
+		// TODO: 2018-06-10 마지막 아이템 디바이더 갱신
 	}
 	
 	@Override
 	public void notifyMoved(final int from, final int to)
 	{
 		notifier.notifyMoved(position + from, position + to);
+		// TODO: 2018-06-10 마지막 아이템 디바이더 갱신
 	}
 	
 	@Override
 	public int compareTo(@NonNull DRVGroup another)
 	{
 		return this.position - another.position;
+	}
+	
+	private class Placeholder
+	{
+		private final int count;
+		@NonNull
+		private final BiConsumer<V, ItemPosition> onBind;
+		@NonNull
+		private final ArrayList<Boolean> modelPlaced;
+		
+		private Placeholder(final int count, @NonNull final BiConsumer<V, ItemPosition> onBind)
+		{
+			this.count = count;
+			this.onBind = onBind;
+			this.modelPlaced = new ArrayList<>(count);
+			reset();
+		}
+		
+		private void reset()
+		{
+			modelPlaced.clear();
+			for (int i = 0 ; i < count ; ++i)
+			{
+				modelPlaced.add(false);
+			}
+		}
 	}
 }
