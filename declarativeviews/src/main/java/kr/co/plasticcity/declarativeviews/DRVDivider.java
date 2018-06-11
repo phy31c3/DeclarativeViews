@@ -19,15 +19,15 @@ class DRVDivider
 	private final int height;
 	@NonNull
 	private final Drawable drawable;
-	private final boolean includeLast;
+	private final boolean excludeLast;
 	@NonNull
 	private ItemPosition itemPosition;
 	
-	private DRVDivider(final int height, @NonNull final Drawable drawable, final boolean includeLast)
+	private DRVDivider(final int height, @NonNull final Drawable drawable, final boolean excludeLast)
 	{
 		this.height = height;
 		this.drawable = drawable;
-		this.includeLast = includeLast;
+		this.excludeLast = excludeLast;
 		this.itemPosition = new ItemPosition(0, 0, () -> 0, () -> 0);
 	}
 	
@@ -43,7 +43,7 @@ class DRVDivider
 	
 	int getItemOffset()
 	{
-		if (itemPosition.inGroup < itemPosition.groupSize() - (includeLast ? 0 : 1))
+		if (itemPosition.inGroup < itemPosition.groupSize() - (excludeLast ? 1 : 0))
 		{
 			return height;
 		}
@@ -55,7 +55,7 @@ class DRVDivider
 	
 	void draw(@NonNull final Canvas c, @NonNull final RecyclerView parent, @NonNull final View child)
 	{
-		if (itemPosition.inGroup < itemPosition.groupSize() - (includeLast ? 0 : 1))
+		if (itemPosition.inGroup < itemPosition.groupSize() - (excludeLast ? 1 : 0))
 		{
 			final int lineLeft = parent.getPaddingLeft();
 			final int lineRight = parent.getWidth() - parent.getPaddingRight();
@@ -72,13 +72,13 @@ class DRVDivider
 	{
 		private final int heightDp;
 		private final int colorRes;
-		private final boolean includeLast;
+		private final boolean excludeLast;
 		
-		Creator(final int heightDp, final int colorRes, final boolean includeLast)
+		Creator(final int heightDp, final int colorRes, final boolean excludeLast)
 		{
 			this.heightDp = heightDp;
 			this.colorRes = colorRes;
-			this.includeLast = includeLast;
+			this.excludeLast = excludeLast;
 		}
 		
 		DRVDivider create(@NonNull final Context c)
@@ -86,12 +86,12 @@ class DRVDivider
 			final int height = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp, c.getResources().getDisplayMetrics()));
 			final GradientDrawable drawable = new GradientDrawable();
 			drawable.setColor(ContextCompat.getColor(c, colorRes));
-			return new DRVDivider(height, drawable, includeLast);
+			return new DRVDivider(height, drawable, excludeLast);
 		}
 		
-		boolean isIncludeLast()
+		boolean isExcludeLast()
 		{
-			return includeLast;
+			return excludeLast;
 		}
 	}
 }
