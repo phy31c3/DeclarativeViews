@@ -318,7 +318,6 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	@Override
 	public void notifyRangeRemoved(final int start, final int count)
 	{
-		// TODO: 2018-06-10 플레이스홀더 처리
 		if (placeholder != null && model.size() < placeholder.count)
 		{
 			final int beforeSize = model.size() + count;
