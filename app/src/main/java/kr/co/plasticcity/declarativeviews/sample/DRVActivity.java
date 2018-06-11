@@ -158,13 +158,15 @@ public class DRVActivity extends AppCompatActivity
 			       .apply()
 			
 			       .addGroup(listModel, R.layout.drv_item, DrvItemBinding.class)
-			       .onCreate(v ->
-			       {
-				       v.chk.setVisibility(View.VISIBLE);
-			       })
 			       .onBind((v, m) ->
 			       {
+				       v.chk.setVisibility(View.VISIBLE);
 				       v.txv.setText(m.value);
+			       })
+			       .setPlaceholder(10, v ->
+			       {
+				       v.chk.setVisibility(View.GONE);
+				       v.txv.setText("Placeholder");
 			       })
 			       .apply()
 			
@@ -401,7 +403,7 @@ public class DRVActivity extends AppCompatActivity
 		final List<Model> list = new ArrayList<>();
 		for (int i = 0 ; i < 20 ; ++i)
 		{
-			if ((int)(Math.random() * 2) < 1)
+			if ((int)(Math.random() * 5) < 2)
 			{
 				list.add(new Model("" + i));
 			}
