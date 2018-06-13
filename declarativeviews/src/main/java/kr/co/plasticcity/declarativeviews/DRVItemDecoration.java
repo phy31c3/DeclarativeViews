@@ -67,16 +67,17 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 					final DRVDivider childDivider = (DRVDivider)child.getTag(ViewTag.DIVIDER);
 					if (childDivider != null)
 					{
-						if (seenChilds.contains(childDivider.getPositionInGroup()))
-						{
-							++duplicated;
-							continue;
-						}
-						else
-						{
+						// TODO: 2018-06-13  다른 무언가로 대체해야 됨
+//						if (seenChilds.contains(childDivider.getPositionInGroup()))
+//						{
+//							++duplicated;
+//							continue;
+//						}
+//						else
+//						{
 							contentHeight += childDivider.getItemOffset();
-							seenChilds.add(childDivider.getPositionInGroup());
-						}
+//							seenChilds.add(childDivider.getPositionInGroup());
+//						}
 					}
 					contentHeight += child.getHeight();
 					if (contentHeight > listHeight)
