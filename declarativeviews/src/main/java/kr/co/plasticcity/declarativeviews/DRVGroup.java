@@ -27,8 +27,6 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	private final List<M> model;
 	@NonNull
 	private final DRVNotifier notifier;
-	@NonNull
-	private final Supplier<Integer> listSize;
 	@Nullable
 	private final Supplier<V> viewSupplier;
 	@Nullable
@@ -48,21 +46,19 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	private boolean isFooter;
 	private int position;
 	
-	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<Integer> listSize, final int layoutResId, @NonNull final Class<V> viewType)
+	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, final int layoutResId, @NonNull final Class<V> viewType)
 	{
 		this.model = model;
 		this.notifier = notifier;
-		this.listSize = listSize;
 		this.viewSupplier = null;
 		this.viewType = viewType;
 		this.layoutResId = layoutResId;
 	}
 	
-	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<Integer> listSize, @NonNull final Supplier<V> supplier)
+	DRVGroup(@NonNull final List<M> model, @NonNull final DRVNotifier notifier, @NonNull final Supplier<V> supplier)
 	{
 		this.model = model;
 		this.notifier = notifier;
-		this.listSize = listSize;
 		this.viewSupplier = supplier;
 		this.viewType = null;
 		this.layoutResId = 0;
@@ -191,12 +187,12 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 	private boolean performBind(@Nullable final TriConsumer<V, M, ItemPosition> bindFunc, @NonNull final V v, @NonNull final View view, final int pos)
 	{
 		final int local = pos - this.position;
-		final ItemPosition itemPosition = new ItemPosition(local, pos, this::size, listSize);
-		
+		final ItemPosition itemPosition = new ItemPosition(local, pos);
 		final DRVDivider divider = (DRVDivider)view.getTag(ViewTag.DIVIDER);
+		
 		if (divider != null)
 		{
-			divider.setItemPosition(itemPosition);
+			divider.setLast(local == size() - 1);
 		}
 		
 		if (placeholder != null)
@@ -257,8 +253,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 			notifier.notifyInserted(this.position + position);
 		}
 		
-		// TODO: 2018-06-10 중간에 삽입 되었을때 포지션 꼬임 현상 수정
-		if (dividerCreator != null && dividerCreator.isExcludeLast() && position == size() - 1)
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && position > 0 && position == size() - 1)
 		{
 			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
@@ -277,8 +272,7 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 			notifier.notifyRemoved(this.position + position);
 		}
 		
-		// TODO: 2018-06-10 중간에 삽입 되었을때 포지션 꼬임 현상 수정
-		if (dividerCreator != null && dividerCreator.isExcludeLast() && position == size())
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && position > 0 && position == size())
 		{
 			notifier.notifyChangedWithNoAnimation(this.position + position - 1);
 		}
@@ -314,7 +308,11 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		{
 			notifier.notifyRangeInserted(position + start, count);
 		}
-		// TODO: 2018-06-10 마지막 아이템 디바이더 갱신
+		
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && start > 0 && start == beforeSize)
+		{
+			notifier.notifyChangedWithNoAnimation(this.position + start - 1);
+		}
 	}
 	
 	@Override
@@ -341,14 +339,23 @@ class DRVGroup<M, V> implements DRVNotifier, Comparable<DRVGroup>
 		{
 			notifier.notifyRangeRemoved(position + start, count);
 		}
-		// TODO: 2018-06-10 마지막 아이템 디바이더 갱신
+		
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && start > 0 && start == model.size())
+		{
+			notifier.notifyChangedWithNoAnimation(this.position + start - 1);
+		}
 	}
 	
 	@Override
 	public void notifyMoved(final int from, final int to)
 	{
+		if (dividerCreator != null && dividerCreator.isExcludeLast() && (from == size() - 1 || to == size() - 1))
+		{
+			notifier.notifyChangedWithNoAnimation(this.position + from);
+			notifier.notifyChangedWithNoAnimation(this.position + to);
+		}
+		
 		notifier.notifyMoved(position + from, position + to);
-		// TODO: 2018-06-10 마지막 아이템 디바이더 갱신
 	}
 	
 	@Override

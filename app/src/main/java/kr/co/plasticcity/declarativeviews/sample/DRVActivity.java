@@ -73,8 +73,7 @@ public class DRVActivity extends AppCompatActivity
 				       v.btn.setVisibility(View.VISIBLE);
 				       v.btn.setOnClickListener(v1 ->
 				       {
-					       listModel.set(position.inGroup, new Model("100"));
-					       footerModel.performChanged();
+					       listModel.add(0, new Model("10"));
 				       });
 				       v.getRoot().setPadding(0, Integer.parseInt(m.value), 0, 0);
 			       })
@@ -115,12 +114,12 @@ public class DRVActivity extends AppCompatActivity
 				listModel.remove(listModel.size() - 1);
 			}
 		});
-		page.binding.btn4.setText("RM_F");
+		page.binding.btn4.setText("RETAIN");
 		page.binding.btn4.setOnClickListener(v ->
 		{
 			if (!listModel.isEmpty())
 			{
-				listModel.remove(0);
+				listModel.retainAll(Arrays.asList(new Model("10")));
 			}
 		});
 		page.binding.btn5.setText("CLEAR");
@@ -351,6 +350,7 @@ public class DRVActivity extends AppCompatActivity
 					       }
 				       });
 			       })
+			       .setDividerExcludeLast(3, R.color.medium)
 			       .apply()
 			
 			       .buildOnUiThread(() ->

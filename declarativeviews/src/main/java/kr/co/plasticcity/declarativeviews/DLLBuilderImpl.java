@@ -41,13 +41,13 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 	@Override
 	public <M, V> GroupAdder<M, V> addGroup(@Nullable final M model, final int layoutResId, @NonNull final Class<V> viewType)
 	{
-		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, adapter::getItemCount, layoutResId, viewType));
+		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, layoutResId, viewType));
 	}
 	
 	@Override
 	public <M, V> GroupAdder<M, V> addGroup(@Nullable final M model, @NonNull final Supplier<V> supplier)
 	{
-		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, adapter::getItemCount, supplier));
+		return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model), adapter, supplier));
 	}
 	
 	@Override
@@ -62,14 +62,14 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, layoutResId, viewType);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
 			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
 		{
 			Log.w("DeclarativeLinearLayout", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, adapter::getItemCount, layoutResId, viewType));
+			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, layoutResId, viewType));
 		}
 	}
 	
@@ -79,14 +79,14 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, supplier);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
 			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
 		{
 			Log.w("DeclarativeLinearLayout", "Using an abnormal SingleModel. Use 'SingleModel.of(M m)' of 'SingleModel.empty()'");
-			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, adapter::getItemCount, supplier));
+			return new GroupAdderImpl<>(new DRVGroup<>(Collections.singletonList(model.get()), adapter, supplier));
 		}
 	}
 	
@@ -102,7 +102,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, layoutResId, viewType);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
 			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
@@ -112,7 +112,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 			{
 				Log.w("DeclarativeLinearLayout", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
-			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, adapter::getItemCount, layoutResId, viewType));
+			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, layoutResId, viewType));
 		}
 	}
 	
@@ -122,7 +122,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		if (model instanceof DRVModel)
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
-			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, adapter::getItemCount, supplier);
+			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
 			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
@@ -132,7 +132,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 			{
 				Log.w("DeclarativeLinearLayout", "Using an abnormal ListModel. Use 'ListModel.of(Collection<M> m)' or 'ListModel.empty()'");
 			}
-			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, adapter::getItemCount, supplier));
+			return new GroupAdderImpl<>(new DRVGroup<>(model, adapter, supplier));
 		}
 	}
 	

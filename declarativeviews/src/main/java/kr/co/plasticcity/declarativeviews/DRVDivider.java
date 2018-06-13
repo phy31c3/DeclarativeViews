@@ -20,42 +20,36 @@ class DRVDivider
 	@NonNull
 	private final Drawable drawable;
 	private final boolean excludeLast;
-	@NonNull
-	private ItemPosition itemPosition;
+	
+	private boolean isLast;
 	
 	private DRVDivider(final int height, @NonNull final Drawable drawable, final boolean excludeLast)
 	{
 		this.height = height;
 		this.drawable = drawable;
 		this.excludeLast = excludeLast;
-		this.itemPosition = new ItemPosition(0, 0, () -> 0, () -> 0);
 	}
 	
-	void setItemPosition(@NonNull final ItemPosition itemPosition)
+	public void setLast(final boolean last)
 	{
-		this.itemPosition = itemPosition;
-	}
-	
-	int getPositionInGroup()
-	{
-		return itemPosition.inGroup;
+		isLast = last;
 	}
 	
 	int getItemOffset()
 	{
-		if (itemPosition.inGroup < itemPosition.groupSize() - (excludeLast ? 1 : 0))
+		if (excludeLast && isLast)
 		{
-			return height;
+			return 0;
 		}
 		else
 		{
-			return 0;
+			return height;
 		}
 	}
 	
 	void draw(@NonNull final Canvas c, @NonNull final RecyclerView parent, @NonNull final View child)
 	{
-		if (itemPosition.inGroup < itemPosition.groupSize() - (excludeLast ? 1 : 0))
+		if (!excludeLast || !isLast)
 		{
 			final int lineLeft = parent.getPaddingLeft();
 			final int lineRight = parent.getWidth() - parent.getPaddingRight();
