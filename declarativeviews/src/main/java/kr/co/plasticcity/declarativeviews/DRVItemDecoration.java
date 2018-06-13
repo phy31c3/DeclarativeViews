@@ -37,9 +37,10 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 			footerHashes.add(view.hashCode());
 			
 			final int itemCount = parent.getAdapter().getItemCount();
+			final int childCount = parent.getChildCount();
 			
 			final boolean footerNotPrepared = view.getBottom() == 0;
-			final boolean inserted = itemCount > parent.getChildCount();
+			final boolean deleted = itemCount < childCount;
 			final boolean modifying = itemCount > 1 && footerHashes.contains(parent.getChildAt(0).hashCode());
 			
 			if (footerNotPrepared)
@@ -48,7 +49,7 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 				lastPadding = parent.getHeight();
 				outRect.top = lastPadding;
 			}
-			else if (inserted || modifying)
+			else if (deleted | modifying)
 			{
 				view.post(() -> ((DRVNotifier)parent.getAdapter()).notifyChangedWithNoAnimation(itemCount - 1));
 				outRect.top = lastPadding;
@@ -59,25 +60,13 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 				final int footerHeight = view.getHeight();
 				
 				int contentHeight = 0;
-				Set<Integer> seenChilds = new HashSet<>();
-				int duplicated = 0;
-				for (int i = 0 ; i < itemCount - 1 + duplicated ; i++)
+				for (int i = 0 ; i < childCount - 1 ; i++)
 				{
-					final View child = parent.getChildAt(i);
+					final View child = parent.getChildAt(childCount - 2 - i);
 					final DRVDivider childDivider = (DRVDivider)child.getTag(ViewTag.DIVIDER);
 					if (childDivider != null)
 					{
-						// TODO: 2018-06-13  다른 무언가로 대체해야 됨
-//						if (seenChilds.contains(childDivider.getPositionInGroup()))
-//						{
-//							++duplicated;
-//							continue;
-//						}
-//						else
-//						{
-							contentHeight += childDivider.getItemOffset();
-//							seenChilds.add(childDivider.getPositionInGroup());
-//						}
+						contentHeight += childDivider.getItemOffset();
 					}
 					contentHeight += child.getHeight();
 					if (contentHeight > listHeight)
@@ -88,7 +77,21 @@ class DRVItemDecoration extends RecyclerView.ItemDecoration
 				contentHeight += footerHeight;
 				
 				final int padding = listHeight - contentHeight;
-				lastPadding = padding > 0 ? padding : 0;
+				if (padding > 0)
+				{
+					if (itemCount > childCount)
+					{
+						view.post(() -> ((DRVNotifier)parent.getAdapter()).notifyChangedWithNoAnimation(itemCount - 1));
+					}
+					else
+					{
+						lastPadding = padding;
+					}
+				}
+				else
+				{
+					lastPadding = 0;
+				}
 				outRect.top = lastPadding;
 			}
 		}
