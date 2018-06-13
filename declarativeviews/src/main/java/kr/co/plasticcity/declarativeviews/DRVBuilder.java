@@ -1,5 +1,6 @@
 package kr.co.plasticcity.declarativeviews;
 
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -18,54 +19,83 @@ public interface DRVBuilder
 {
 	interface Builder extends DRVBuilder {}
 	
-	<M> SingleGroupAdder<M, View, Definable> addGroup(@NonNull final M model, final int layoutResId);
+	<M> SingleGroupAdder<M, View> addGroup(@NonNull final M model, final int layoutResId);
 	
-	<M, V> SingleGroupAdder<M, V, Definable> addGroup(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
+	<M, V> SingleGroupAdder<M, V> addGroup(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
 	
-	<M, V> SingleGroupAdder<M, V, Definable> addGroup(@NonNull final M model, @NonNull final Supplier<V> supplier);
+	<M, V> SingleGroupAdder<M, V> addGroup(@NonNull final M model, @NonNull final Supplier<V> supplier);
 	
-	<M> SingleGroupAdder<M, View, Definable> addGroup(@NonNull final SingleModel<M> model, final int layoutResId);
+	<M> SingleGroupAdder<M, View> addGroup(@NonNull final SingleModel<M> model, final int layoutResId);
 	
-	<M, V> SingleGroupAdder<M, V, Definable> addGroup(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull Class<V> viewType);
+	<M, V> SingleGroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull Class<V> viewType);
 	
-	<M, V> SingleGroupAdder<M, V, Definable> addGroup(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier);
+	<M, V> SingleGroupAdder<M, V> addGroup(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier);
 	
-	<M> GroupAdder<M, View, Definable> addGroup(@NonNull final List<M> model, final int layoutResId);
+	<M> GroupAdder<M, View> addGroup(@NonNull final List<M> model, final int layoutResId);
 	
-	<M, V> GroupAdder<M, V, Definable> addGroup(@NonNull final List<M> model, final int layoutResId, @NonNull Class<V> viewType);
+	<M, V> GroupAdder<M, V> addGroup(@NonNull final List<M> model, final int layoutResId, @NonNull Class<V> viewType);
 	
-	<M, V> GroupAdder<M, V, Definable> addGroup(@NonNull final List<M> model, @NonNull final Supplier<V> supplier);
+	<M, V> GroupAdder<M, V> addGroup(@NonNull final List<M> model, @NonNull final Supplier<V> supplier);
 	
-	<M> SingleGroupAdder<M, View, Buildable> addFooter(@NonNull final M model, final int layoutResId);
+	<M> FooterAdder<M, View> addFooter(@NonNull final M model, final int layoutResId);
 	
-	<M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
+	<M, V> FooterAdder<M, V> addFooter(@NonNull final M model, final int layoutResId, @NonNull Class<V> viewType);
 	
-	<M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final M model, @NonNull final Supplier<V> supplier);
+	<M, V> FooterAdder<M, V> addFooter(@NonNull final M model, @NonNull final Supplier<V> supplier);
 	
-	<M> SingleGroupAdder<M, View, Buildable> addFooter(@NonNull final SingleModel<M> model, final int layoutResId);
+	<M> FooterAdder<M, View> addFooter(@NonNull final SingleModel<M> model, final int layoutResId);
 	
-	<M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull Class<V> viewType);
+	<M, V> FooterAdder<M, V> addFooter(@NonNull final SingleModel<M> model, final int layoutResId, @NonNull Class<V> viewType);
 	
-	<M, V> SingleGroupAdder<M, V, Buildable> addFooter(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier);
+	<M, V> FooterAdder<M, V> addFooter(@NonNull final SingleModel<M> model, @NonNull final Supplier<V> supplier);
 	
-	interface GroupAdder<M, V, R>
+	interface GroupAdder<M, V>
 	{
-		GroupAdder<M, V, R> onCreate(@NonNull final Consumer<V> func);
+		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
 		
-		GroupAdder<M, V, R> onBind(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
 		
-		GroupAdder<M, V, R> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
 		
-		R apply();
+		GroupAdder<M, V> setPlaceholder(final int count, @NonNull final Consumer<V> onPlaceholderBind);
+		
+		GroupAdder<M, V> setPlaceholder(final int count, @NonNull final BiConsumer<V, ItemPosition> onPlaceholderBind);
+		
+		GroupAdder<M, V> setDivider(final int heightDp, @ColorRes final int colorRes);
+		
+		GroupAdder<M, V> setDividerExcludeLast(final int heightDp, @ColorRes final int colorRes);
+		
+		Definable apply();
 	}
 	
-	interface SingleGroupAdder<M, V, R> extends GroupAdder<M, V, R>
+	interface SingleGroupAdder<M, V> extends GroupAdder<M, V>
 	{
-		SingleGroupAdder<M, V, R> onCreate(@NonNull final Consumer<V> func);
+		SingleGroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
 		
-		GroupAdder<M, V, R> onFistBind(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> onFirstBind);
 		
-		GroupAdder<M, V, R> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind);
+		
+		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
+		
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
+		
+		Definable apply();
+	}
+	
+	interface FooterAdder<M, V>
+	{
+		FooterAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
+		
+		FooterAdder<M, V> onFistBind(@NonNull final BiConsumer<V, M> onFirstBind);
+		
+		FooterAdder<M, V> onFistBind(@NonNull final TriConsumer<V, M, ItemPosition> onFirstBind);
+		
+		FooterAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
+		
+		FooterAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
+		
+		Buildable apply();
 	}
 	
 	interface Buildable

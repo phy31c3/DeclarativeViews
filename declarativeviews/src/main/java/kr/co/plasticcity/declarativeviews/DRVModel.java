@@ -24,26 +24,26 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	@NonNull
 	private DRVNotifier notifier;
 	@NonNull
-	private DRVCalculator calculator;
+	private Function<Integer, Integer> posInList;
 	
 	DRVModel()
 	{
 		this.list = new ArrayList<>();
 		this.notifier = DRVNotifier.empty();
-		this.calculator = DRVCalculator.empty();
+		this.posInList = p -> 0;
 	}
 	
 	DRVModel(@NonNull final List<M> l)
 	{
 		this.list = l;
 		this.notifier = DRVNotifier.empty();
-		this.calculator = DRVCalculator.empty();
+		this.posInList = p -> 0;
 	}
 	
-	void init(@NonNull final DRVNotifier notifier, @NonNull final DRVCalculator calculator)
+	void init(@NonNull final DRVNotifier notifier, @NonNull final Function<Integer, Integer> posInList)
 	{
 		this.notifier = notifier;
-		this.calculator = calculator;
+		this.posInList = posInList;
 	}
 	
 	/////////////////////////////////////////////////////////////////////////
@@ -75,11 +75,11 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	{
 		if (!list.isEmpty())
 		{
-			final M old = list.get(0);
-			if (old != null)
+			final M oldM = list.get(0);
+			if (oldM != null)
 			{
-				final M neW = f.apply(old);
-				if (!neW.equals(list.set(0, neW)))
+				final M newM = f.apply(oldM);
+				if (!newM.equals(list.set(0, newM)))
 				{
 					notifier.notifyChanged(0);
 				}
@@ -100,7 +100,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	@Override
 	public int getPositionInList()
 	{
-		return calculator.getPositionInList(0);
+		return posInList.apply(0);
 	}
 	
 	@Override
@@ -118,11 +118,11 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	{
 		if (index >= 0 && index < list.size())
 		{
-			final M old = list.get(index);
-			if (old != null)
+			final M oldM = list.get(index);
+			if (oldM != null)
 			{
-				final M neW = f.apply(old);
-				if (!neW.equals(list.set(index, neW)))
+				final M newM = f.apply(oldM);
+				if (!newM.equals(list.set(index, newM)))
 				{
 					notifier.notifyChanged(index);
 				}
@@ -139,11 +139,11 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 			Range range = null;
 			for (int i = start ; i <= end ; ++i)
 			{
-				final M old = list.get(i);
-				if (old != null)
+				final M oldM = list.get(i);
+				if (oldM != null)
 				{
-					final M neW = f.apply(old, i);
-					if (!neW.equals(list.set(i, neW)))
+					final M newM = f.apply(oldM, i);
+					if (!newM.equals(list.set(i, newM)))
 					{
 						if (range != null && range.isNext(i))
 						{
@@ -189,7 +189,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 				{
 					if (mark > pin)
 					{
-						list.removeAll(list.subList(pin, mark));
+						list.removeAll(new ArrayList<>(list.subList(pin, mark)));
 						notifier.notifyRangeRemoved(pin, mark - pin);
 					}
 					if (add.size() > 0)
@@ -213,7 +213,7 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 			if (pin < list.size())
 			{
 				final int count = list.size() - pin;
-				list.removeAll(list.subList(pin, list.size()));
+				list.removeAll(new ArrayList<>(list.subList(pin, list.size())));
 				notifier.notifyRangeRemoved(pin, count);
 			}
 			if (add.size() > 0)
@@ -237,13 +237,13 @@ class DRVModel<M> implements SingleModel<M>, ListModel<M>
 	@Override
 	public int getPositionInList(final int index)
 	{
-		return calculator.getPositionInList(index);
+		return posInList.apply(index);
 	}
 	
 	@Override
 	public int getPositionInList(@NonNull final M m)
 	{
-		return calculator.getPositionInList(list.indexOf(m));
+		return posInList.apply(list.indexOf(m));
 	}
 	
 	@Override
