@@ -38,13 +38,13 @@ public interface DLLBuilder
 	
 	interface GroupAdder<M, V>
 	{
-		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func);
+		GroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate);
 		
-		GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> func);
+		GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> onCreate);
 		
-		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func);
+		GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind);
 		
-		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func);
+		GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind);
 		
 		Buildable apply();
 	}

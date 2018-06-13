@@ -6,7 +6,14 @@ package kr.co.plasticcity.declarativeviews;
 
 public class ItemPosition
 {
+	/**
+	 * It is accurate only when ItemPosition is obtained, and is not synchronized with the model change.
+	 */
 	public final int inGroup;
+	
+	/**
+	 * It is accurate only when ItemPosition is obtained, and is not synchronized with the model change.
+	 */
 	public final int inList;
 	
 	ItemPosition(final int inGroup, final int inList)

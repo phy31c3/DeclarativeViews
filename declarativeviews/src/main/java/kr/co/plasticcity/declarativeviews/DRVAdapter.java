@@ -48,19 +48,21 @@ class DRVAdapter extends RecyclerView.Adapter<DRVAdapter.ViewHolder> implements 
 		final DRVGroup group = getGroupAt(position);
 		if (holder.fresh)
 		{
-			holder.fresh = false;
 			if (group.hasOnFirstBind())
 			{
-				group.onFirstBind(holder.v, position);
+				//noinspection UnnecessaryLocalVariable
+				final boolean placeholderBound = group.onFirstBind(holder.v, holder.itemView, position);
+				holder.fresh = placeholderBound;
 			}
 			else
 			{
-				group.onBind(holder.v, position);
+				group.onBind(holder.v, holder.itemView, position);
+				holder.fresh = false;
 			}
 		}
 		else
 		{
-			group.onBind(holder.v, position);
+			group.onBind(holder.v, holder.itemView, position);
 		}
 	}
 	
@@ -80,6 +82,12 @@ class DRVAdapter extends RecyclerView.Adapter<DRVAdapter.ViewHolder> implements 
 	public void notifyChanged(final int position)
 	{
 		super.notifyItemChanged(position);
+	}
+	
+	@Override
+	public void notifyChangedWithNoAnimation(final int position)
+	{
+		super.notifyItemChanged(position, Boolean.FALSE);
 	}
 	
 	@Override

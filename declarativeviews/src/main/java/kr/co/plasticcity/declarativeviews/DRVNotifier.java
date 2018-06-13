@@ -26,6 +26,9 @@ interface DRVNotifier
 			public void notifyRangeChanged(final int start, final int count) {}
 			
 			@Override
+			public void notifyChangedWithNoAnimation(final int position) {}
+			
+			@Override
 			public void notifyRangeInserted(final int start, final int count) {}
 			
 			@Override
@@ -37,6 +40,8 @@ interface DRVNotifier
 	}
 	
 	void notifyChanged(final int position);
+	
+	void notifyChangedWithNoAnimation(final int position);
 	
 	void notifyInserted(final int position);
 	

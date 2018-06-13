@@ -63,7 +63,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
 			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
-			m.init(group, group);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
@@ -80,7 +80,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
 			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
-			m.init(group, group);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
@@ -103,7 +103,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
 			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, layoutResId, viewType);
-			m.init(group, group);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
@@ -123,7 +123,7 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		{
 			final DRVModel<M> m = (DRVModel<M>)model;
 			final DRVGroup<M, V> group = new DRVGroup<>(m, adapter, supplier);
-			m.init(group, group);
+			m.init(group, group::getPositionInList);
 			return new GroupAdderImpl<>(group);
 		}
 		else
@@ -169,30 +169,30 @@ class DLLBuilderImpl implements DLLBuilder.Buildable
 		}
 		
 		@Override
-		public GroupAdder<M, V> onCreate(@NonNull final Consumer<V> func)
+		public GroupAdder<M, V> onCreate(@NonNull final Consumer<V> onCreate)
 		{
-			group.setOnFirstBind((v, m, position) -> func.accept(v));
+			group.setOnFirstBind((v, m, position) -> onCreate.accept(v));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> func)
+		public GroupAdder<M, V> onCreate(@NonNull final BiConsumer<V, ItemPosition> onCreate)
 		{
-			group.setOnFirstBind((v, m, position) -> func.accept(v, position));
+			group.setOnFirstBind((v, m, position) -> onCreate.accept(v, position));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> func)
+		public GroupAdder<M, V> onBind(@NonNull final BiConsumer<V, M> onBind)
 		{
-			group.setOnBind((m, v, position) -> func.accept(m, v));
+			group.setOnBind((m, v, position) -> onBind.accept(m, v));
 			return this;
 		}
 		
 		@Override
-		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> func)
+		public GroupAdder<M, V> onBind(@NonNull final TriConsumer<V, M, ItemPosition> onBind)
 		{
-			group.setOnBind(func);
+			group.setOnBind(onBind);
 			return this;
 		}
 		
